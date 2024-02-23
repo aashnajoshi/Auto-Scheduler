@@ -29,7 +29,7 @@ def create_class_xls():
 
 tt_structure = [["", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th"], ["Mon"], ["Tues"], ["Wed"], ["Thurs"], ["Fri"]]
 
-# teachers_info = get_initial_info()
+teachers_info = get_initial_info()
 # teachers_info={'a':[6,'s1'],'b':[4,'s2']}
 
 for teacher, subjects in teachers_info.items():
