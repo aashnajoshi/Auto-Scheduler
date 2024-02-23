@@ -17,12 +17,12 @@ def create_teacher_timetable(teacher_name, subjects, tt_structure):
     wb = Workbook()  # Create a new workbook
     for subject, num_of_lectures in subjects.items():
         ws = wb.create_sheet(subject)
-        # Append days of the week as row headers
         ws.append(tt_structure[0])
         for i in range(1, len(tt_structure)):
-            ws.append([tt_structure[i][0]] + [""] * (num_of_lectures))  # Add empty rows for lectures
+            ws.append([tt_structure[i][0]]) 
     del wb["Sheet"]  # Delete the default sheet
     wb.save(f"{teacher_name}_TimeTable.xlsx")
+    print(f"{teacher_name}_TimeTable.xlsx created!")
 
 def create_class_xls():
     print("class working")
@@ -30,8 +30,7 @@ def create_class_xls():
 tt_structure = [["", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th"], ["Mon"], ["Tues"], ["Wed"], ["Thurs"], ["Fri"]]
 
 teachers_info = get_initial_info()
-# teachers_info={'a':[6,'s1'],'b':[4,'s2']}
 
 for teacher, subjects in teachers_info.items():
     create_teacher_timetable(teacher, subjects, tt_structure)
-create_class_xls()
+# create_class_xls()
