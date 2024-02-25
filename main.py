@@ -24,7 +24,7 @@ def create_teacher_timetable(teacher_name, subjects, tt_structure):
 def create_class_xls():
     print("class working")
 
-tt_structure = [["", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th"], ["Mon"], ["Tues"], ["Wed"], ["Thurs"], ["Fri"]]
+tt_structure = [["", "1st", "2nd", "3rd", "4th","", "5th", "6th", "7th"], ["Mon"], ["Tues"], ["Wed"], ["Thurs"], ["Fri"]]
 
 teachers_info = get_initial_info()
 
