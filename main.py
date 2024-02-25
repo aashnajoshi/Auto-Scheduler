@@ -11,13 +11,11 @@ def get_initial_info():
     return teachers
 
 def create_teacher_timetable(teacher_name, subjects, tt_structure):
-    wb = Workbook()  # Create a new workbook
-    for subject in subjects:
-        ws = wb.create_sheet(subject)
-        ws.append(tt_structure[0])
-        for i in range(1, len(tt_structure)):
-            ws.append([tt_structure[i][0]]) 
-    del wb["Sheet"]  # Delete the default sheet
+    wb = Workbook()
+    ws = wb.active
+    for row in tt_structure:
+        ws.append(row)
+
     wb.save(f"{teacher_name}_TimeTable.xlsx")
     print(f"{teacher_name}_TimeTable.xlsx created!")
 
