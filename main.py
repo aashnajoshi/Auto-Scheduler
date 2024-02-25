@@ -5,17 +5,14 @@ def get_initial_info():
     teachers = {}
     for i in range(num_of_teachers):
         name = input(f"Teacher {i+1} Name: ").capitalize()
-        num_of_lectures = int(input(f"Number of Subjects taught by {name}: "))
-        subjects = {}
-        for j in range(num_of_lectures):
-            subject = input(f"Subject {j+1} for {name}: ")
-            subjects[subject] = int(input(f"Number of lectures for {subject} (per week): "))
+        num_of_subjects = int(input(f"Number of Subjects taught by {name}: "))
+        subjects = [input(f"Subject {j+1} for {name}: ") for j in range(num_of_subjects)]
         teachers[name] = subjects
     return teachers
 
 def create_teacher_timetable(teacher_name, subjects, tt_structure):
     wb = Workbook()  # Create a new workbook
-    for subject, num_of_lectures in subjects.items():
+    for subject in subjects:
         ws = wb.create_sheet(subject)
         ws.append(tt_structure[0])
         for i in range(1, len(tt_structure)):
