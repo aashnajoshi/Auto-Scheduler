@@ -16,6 +16,9 @@ def create_teacher_timetable(teacher_name, subjects, tt_structure):
     for row in tt_structure:
         ws.append(row)
 
+    ws.merge_cells('F2:F6')
+    ws.merge_cells('H4:I4')
+
     wb.save(f"{teacher_name}_TimeTable.xlsx")
     print(f"{teacher_name}_TimeTable.xlsx created!")
 
