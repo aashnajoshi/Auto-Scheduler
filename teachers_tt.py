@@ -11,5 +11,5 @@ def get_initial_info():
     return teachers
 
 teachers_info = get_initial_info()
-
-create_timetable(teachers_info,tt_structure)
+for name in teachers_info.keys():
+    create_timetable(name,tt_structure)
