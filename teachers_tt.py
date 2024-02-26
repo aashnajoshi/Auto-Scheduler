@@ -1,4 +1,4 @@
-from main import create_timetable, tt_structure
+from tt_struct import create_timetable, tt_structure
 
 def get_initial_info():
     num_of_teachers = int(input("Enter No. of Teachers: "))
@@ -12,4 +12,4 @@ def get_initial_info():
 
 teachers_info = get_initial_info()
 
-create_timetable(teachers_info.tt_structure)
+create_timetable(teachers_info,tt_structure)
