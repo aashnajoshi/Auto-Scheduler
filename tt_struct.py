@@ -11,5 +11,7 @@ def create_timetable(x, tt_structure):
     ws.merge_cells('F1:F6')
     ws.merge_cells('H4:I4')
 
+# to add a condition that if there is a lab lec then 2 cells must be merged using above syntax.
+
     wb.save(f"{x}_TimeTable.xlsx")
     print(f"{x}_TimeTable.xlsx created!")
