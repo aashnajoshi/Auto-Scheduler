@@ -21,8 +21,10 @@ labs_tt={'lab1':[],'lab2':[],'lab3':[],'lab4':[]}
 def T_T_G(classes_list):
     for clas in classes_list:
         # teachers_of_class = get_teachers(clas)
+        print(clas)
         assign_labs(clas)
         assign_lectures(clas)
+        print("")
 
 # Making list of techers for a particular class
 def get_teachers(clas):
@@ -52,10 +54,11 @@ def assign_labs(cls):
                 update_tt('labs_tt',lab,lec)
                 update_tt('classes_tt',cls,lec)
                 lec_for_labs.remove(lecl)
-                print(lab+" "+selected_sub+
-                    " alloted to ",lec , 
-                    " for " + cls +
-                    ' teacher '+teacher)
+                # print(lab+" "+selected_sub+
+                #     " alloted to ",lec , 
+                #     " for " + cls +
+                #     ' teacher '+teacher)
+                print(lec," ",selected_sub," ",teacher," ",lab)
                 break
 
 # Getting list of labs for a class
@@ -95,10 +98,37 @@ def update_tt(tt,key,lec):
         class_tt[key].append(lec)
 
 def assign_lectures(cls):
-    print("lectures alloted to "+cls)
+  print("lectures alloted to "+cls)	
+  """  
+get subjects data of class
+make list of weekdays
+while(sum of lectures needed in subjects dat )
+    choose any day from weekdays 
+        prepare list of subjects to be scheduled
+        for each lecture
+            if lecure free:
+                choose any lecture 
+                make copy of subject list
+                for range(num of subjects):
+                    select random subject from copy list
+                    if (teacher available for lecture):
+                        assign lecture i.e 
+                        update teacher tt 
+                        update clas tt
+                        dec num of lec for subject in subject data
+                        remove subject from list of subjects for today
+                        break
+                    else:
+                        remove subject from copy
+            else:
+                continue to next lecture
+    remove day from weekdays
+"""
+
 
 # Calling the time table genrator with list of all class names
 T_T_G(classes.keys())
+
 print(teachers_tt)
 print(labs_tt)
 print(class_tt)
