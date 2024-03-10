@@ -6,7 +6,7 @@ classes ={'aiml':[['sub1','sub2','sub3','sub4'],['lab_sub3','lab_sub2']],
         }
 
 teachers = {'teacher1':[['sub1','aiml',3],['sub1','cse',3],['sub5','ece',3]],
-          'teacher2':[['sub2','aiml',3],['sub2','cse',3],['sub1','ece',3],['lab_sub2','aiml',1],['lab_sub2','cse',1]],
+          'teacher2':[['sub2','aiml',3],['sub2','cse',2],['sub1','ece',3],['lab_sub2','aiml',1],['lab_sub2','cse',1]],
           'teacher3':[['sub3','aiml',2],['lab_sub3','aiml',1],['lab_sub0','ece',1]],
           'teacher4':[['sub4','aiml',4],['sub4','cse',2]],
           'teacher5':[['sub5','cse',4,],['sub6','ece',3],['lab_sub5','cse',1]]	
@@ -39,46 +39,63 @@ def get_teachers(clas):
 # Scheduling labs for a class
 def assign_labs(cls):
     # print("labs alloted "+cls)
-    lab_sub= get_lab_sub(cls)
-    lab_and_teachers =get_lab_and_teachers(cls)
-    lec_for_labs=[[(1,56),(1,34)],[(2,34),(2,67)],[(4,56),(4,34)],[(5,34),(5,67)]]
+    lab_sub= get_sub(cls,1)
+    lab_and_teachers =get_data(cls,1)
+    lec_for_labs=[(1,5,6),(1,3,4),(2,3,4),(2,6,7),(4,5,6),(4,3,4),(5,3,4),(5,6,7)]
     for selected_sub in lab_sub:
-        num_of_labsub=len(lec_for_labs)
-        for l in range(num_of_labsub):
-            lecl = random.choice(lec_for_labs)
-            lec=random.choice(lecl)
+        lecs=[x for x in lec_for_labs]
+        num_of_lec=len(lec_for_labs)
+        for l in range(num_of_lec):
+            lec = random.choice(lecs)
             teacher=lab_and_teachers[selected_sub]
-            if(is_teacher_free(teacher,lec)):
+            if(is_teacher_free(teacher,lec,1)):
                 lab=get_lab(lec)
-                update_tt('teachers_tt',teacher,lec)
-                update_tt('labs_tt',lab,lec)
-                update_tt('classes_tt',cls,lec)
-                lec_for_labs.remove(lecl)
-                # print(lab+" "+selected_sub+
-                #     " alloted to ",lec , 
-                #     " for " + cls +
-                #     ' teacher '+teacher)
-                print(lec," ",selected_sub," ",teacher," ",lab)
+                for i in range(2):
+                    update_tt('teachers_tt',teacher,(lec[0],lec[i+1]))
+                    update_tt('labs_tt',lab,(lec[0],lec[i+1]))
+                    update_tt('classes_tt',cls,(lec[0],lec[i+1]))
+                lec_for_labs.remove(lec)
+                print((lec[0],lec[1])," and ",(lec[0],lec[2])," ",selected_sub," ",teacher," ",lab)
                 break
+            else:
+                lecs.remove(lec)
 
 # Getting list of labs for a class
-def get_lab_sub(cls):
-    return classes[cls][1]
+def get_sub(cls,lab):
+    cc=[i for i in classes[cls][lab]]
+    return cc
 
-def get_lab_and_teachers(cls):
+def get_data(cls,lab):
     t={}
-    for teacher in teachers.keys():
-        for lol in teachers[teacher]: #lol = list of list
-            if(lol[1]==cls and lol[0][:3]=='lab'):
-                t[lol[0]]= teacher
-                break
+    if(lab):
+        for teacher in teachers.keys():
+            for lol in teachers[teacher]: #lol = list of list
+                if(lol[1]==cls and lol[0][:3]=='lab'):
+                    t[lol[0]]= teacher
+                    break
+    else:
+        for teacher in teachers.keys():
+            for lol in teachers[teacher]:
+                if(lol[1]==cls and lol[0][:3]!='lab'):
+                    t[lol[0]]=[teacher,lol[2]]
     return t
 
-def is_teacher_free(teacher,lec):
-    if(lec not in teachers_tt[teacher]):
-        return True
+def is_teacher_free(teacher,lec,lab):
+    if(lab):
+        if((lec[0],lec[1]) not in teachers_tt[teacher] and (lec[0],lec[2]) not in teachers_tt[teacher]):
+            return True
+        else:
+            return False
     else:
-        return False
+        if(lec not in teachers_tt[teacher]):
+            if(lec[1]==1 or lec[1]==2):
+                return True
+            elif((lec[0],lec[1]-1) not in teachers_tt[teacher] and (lec[0],lec[1]-2) not in teachers_tt[teacher]):
+                return True
+            else:
+                return False
+        else:
+            return False
 
 def get_lab(lec):
     temp=labs
@@ -98,37 +115,51 @@ def update_tt(tt,key,lec):
         class_tt[key].append(lec)
 
 def assign_lectures(cls):
-  print("lectures alloted to "+cls)	
-  """  
-get subjects data of class
-make list of weekdays
-while(sum of lectures needed in subjects dat )
-    choose any day from weekdays 
-        prepare list of subjects to be scheduled
-        for each lecture
-            if lecure free:
-                choose any lecture 
-                make copy of subject list
-                for range(num of subjects):
-                    select random subject from copy list
-                    if (teacher available for lecture):
-                        assign lecture i.e 
-                        update teacher tt 
-                        update clas tt
-                        dec num of lec for subject in subject data
-                        remove subject from list of subjects for today
-                        break
-                    else:
-                        remove subject from copy
-            else:
-                continue to next lecture
-    remove day from weekdays
-"""
-
-
+  
+  cls_sub= get_sub(cls,0)   # get subjects data of class
+  sub_data=get_data(cls,0)
+  days=[1,2,3,4,5]# make list of weekdays
+  sub_left=get_sub(cls,0) #prepare list of subjects to be scheduled
+  while(len(sub_left)):# while(sum of lectures needed in subjects dat )
+    day=random.choice(days)#     choose any day from weekdays 
+    for lec in range(1,8):#         for each lecture
+        if( (day,lec) not in class_tt[cls]):#             if lecure free:
+            subjects= [i for i in sub_left]#                 make copy of subject list
+            num=len(subjects)
+            for n in range(num):#                 for range(num of subjects):
+                subject=random.choice(subjects)#                     select random subject from copy list
+                if(is_teacher_free(sub_data[subject][0],(day,lec),0)):# if (teacher available for lecture):
+                    update_tt('teachers_tt',sub_data[subject][0],(day,lec))#   update teacher tt 
+                    update_tt('classes_tt',cls,(day,lec))#                         update clas tt
+                    sub_data[subject][1]-=1#                         dec num of lec for subject in subject data 
+                    sub_left.remove(subject)#                         remove subject from list of subjects for today
+                    print((day,lec)," ",subject," ",sub_data[subject][0]," ")
+                    break#                         break
+                else:#                     else:
+                    subjects.remove(subject)#                         remove subject from copy
+    sub_left=[s for s in cls_sub if sub_data[s][1]>0] #update list of subjects left
+    days.remove(day)#     remove day from weekdays
+    if( len(days)==0 and len(sub_left)!=0): # insufficient space
+        print("Exhausted !!!!!! no space left with \n",sub_left)
+        break
 # Calling the time table genrator with list of all class names
 T_T_G(classes.keys())
-
-print(teachers_tt)
+for teacher in teachers.keys():
+    print(teacher)
+    for d in range(1,6):
+        for p in range(1,8):
+            if (d,p) in teachers_tt[teacher]:
+                print((d,p),end="   ")
+            else:
+                print("(-,-)",end="   ")
+        print("")  
 print(labs_tt)
-print(class_tt)
+for cls in classes.keys():
+    print(cls)
+    for d in range(1,6):
+        for p in range(1,8):
+            if (d,p) in class_tt[cls]:
+                print((d,p),end="   ")
+            else:
+                print("(-,-)",end="   ")
+        print("")
