@@ -1,5 +1,3 @@
-# main.py
-
 from class_tt import generate_class_timetable
 from labs_tt import generate_lab_timetable
 from teachers_tt import teachers_info

@@ -73,15 +73,15 @@ def labsui():
 start=1
 while(start):
     print("ACEM Scheduling System")
-    print("classes")
-    print("teachers")
-    print("labs")
-    act=input("Enter action: ")
-    if act=="classes":
+    print("1. Classes")
+    print("2. Teachers")
+    print("3. Labs")
+    act=int(input("Enter action: "))
+    if act==1:
         classesui()
-    elif act=="teachers":
+    elif act==2:
         teachersui()
-    elif act=="labs":
+    elif act==3:
         labsui()
     else:
         start=0
