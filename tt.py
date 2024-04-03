@@ -25,7 +25,7 @@ def get_initial_info():
         num_of_subjects = int(input(f"Number of Subjects taught by {name}: "))
         subjects = [input(f"Subject {j+1} for {name}: ") for j in range(num_of_subjects)]
         teachers[name] = subjects
-    return teachers, subjects
+    return teachers
 
 teachers_info = get_initial_info()
 for name in teachers_info.keys():
