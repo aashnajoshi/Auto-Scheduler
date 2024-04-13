@@ -10,7 +10,7 @@ def classesui():
         print(name)
     print("1. Add class")
     print("2. Delete class")
-    print("0 . Back")
+    print("0. Back")
     i=int(input("Enter choice: "))
     if i==1:
         newclass=input("Enter name: ")
@@ -33,7 +33,7 @@ def teachersui():
         print(name)
     print("1. Add teacher")
     print("2. Delete teacher")
-    print("0 . Back")
+    print("0. Back")
     i=int(input("Enter choice: "))
     if i==1:
         newteacher=input("Enter name: ")
@@ -56,7 +56,7 @@ def labsui():
         print(name)
     print("1. Add lab")
     print("2. Delete lab")
-    print("0 . Back")
+    print("0. Back")
     i=int(input("Enter choice: "))
     if i==1:
         newlab=input("Enter name: ")
