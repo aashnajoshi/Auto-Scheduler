@@ -4,6 +4,7 @@ from PyQt5.QtGui import QIcon
 import warnings
 import sys
 
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # To open Designer: qt5-tools designer
 # To convert .ui file to .py file: pyuic5 -x filename.ui -o filename.py
@@ -330,8 +331,6 @@ class TimeTableGenerator(QMainWindow):
 
     def processSectionData(self, dialog):
         dialog.accept()
-
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
