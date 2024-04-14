@@ -1,6 +1,6 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QAction, QMenuBar, QFileDialog, QTabWidget, QVBoxLayout, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QAction, QMenuBar, QFileDialog, QTabWidget, QVBoxLayout, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox
 from PyQt5.QtGui import QIcon
+import sys
 import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -61,7 +61,7 @@ class TimeTableGenerator(QMainWindow):
         if title != "Scenario Manager":
             add_button_layout = QHBoxLayout()
             add_button = QPushButton(f"Add {title[:-1]}", self)
-            add_button.clicked.connect(self.addButtonClicked)
+            add_button.clicked.connect(lambda: self.addButtonClicked(title))
             add_button_layout.addWidget(add_button)
 
             import_button = QPushButton("Import from CSV", self)
@@ -71,6 +71,21 @@ class TimeTableGenerator(QMainWindow):
             add_button_widget = QWidget()
             add_button_widget.setLayout(add_button_layout)
             layout.addWidget(add_button_widget)
+        else:
+            # Add buttons for Scenario Manager
+            scenario_buttons_layout = QHBoxLayout()
+
+            generate_button = QPushButton("Generate", self)
+            generate_button.clicked.connect(self.generateButtonClicked)
+            scenario_buttons_layout.addWidget(generate_button)
+
+            view_result_button = QPushButton("View Result", self)
+            view_result_button.clicked.connect(self.viewResultButtonClicked)
+            scenario_buttons_layout.addWidget(view_result_button)
+
+            scenario_buttons_widget = QWidget()
+            scenario_buttons_widget.setLayout(scenario_buttons_layout)
+            layout.addWidget(scenario_buttons_widget)
 
         tab.setLayout(layout)
 
@@ -94,12 +109,54 @@ class TimeTableGenerator(QMainWindow):
     def about(self):
         print("About")
 
-    def addButtonClicked(self):
-        current_tab_title = self.tabs.tabText(self.tabs.currentIndex())
-        print(f"Add {current_tab_title[:-1]} Button Clicked")
+    def addButtonClicked(self, title):
+        main_window_size = self.size()
+        new_window_width = main_window_size.width() * 0.8
+        new_window_height = main_window_size.height() * 0.8
+
+        self.new_window = QMainWindow()
+        self.new_window.setWindowTitle(title)
+        self.new_window.setGeometry(self.geometry().center().x() - new_window_width / 2, self.geometry().center().y() - new_window_height / 2, new_window_width, new_window_height)
+        self.new_window.show()
 
     def importButtonClicked(self):
-        print("Import Button Clicked")
+        filename, _ = QFileDialog.getOpenFileName(self, "Import CSV", "", "CSV Files (*.csv)")
+        if filename:
+            try:
+                with open(filename, 'r') as file:
+                    # Read the CSV data
+                    csv_data = []
+                    for line in file:
+                        csv_data.append(line.strip().split(','))
+
+                # Get the current tab and table widget
+                current_tab_index = self.tabs.currentIndex()
+                current_tab_widget = self.tabs.widget(current_tab_index)
+                table_widget = current_tab_widget.findChild(QTableWidget)
+
+                # Get column names
+                column_names = [table_widget.horizontalHeaderItem(i).text() for i in range(table_widget.columnCount())]
+
+                # Check if CSV columns match table columns
+                if csv_data and csv_data[0] != column_names:
+                    QMessageBox.warning(self, "Warning", "CSV columns do not match table columns.", QMessageBox.Ok)
+                    return
+
+                # Add data to the table
+                table_widget.setRowCount(0)
+                for row_data in csv_data[1:]:
+                    row_position = table_widget.rowCount()
+                    table_widget.insertRow(row_position)
+                    for column_position, item_data in enumerate(row_data):
+                        table_widget.setItem(row_position, column_position, QTableWidgetItem(item_data))
+            except Exception as e:
+                QMessageBox.critical(self, "Error", str(e), QMessageBox.Ok)
+
+    def generateButtonClicked(self):
+        print("Generate Button Clicked")
+
+    def viewResultButtonClicked(self):
+        print("View Result Button Clicked")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
