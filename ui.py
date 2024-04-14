@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import *
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QIcon
 import warnings
 import sys
@@ -123,6 +123,20 @@ class TimeTableGenerator(QMainWindow):
         new_window_height = main_window_size.height() * 0.8
         return QtCore.QSize(new_window_width, new_window_height)
 
+    def create_availability_table(self, days_of_week, hour_labels):
+        availability_table = QTableWidget()
+        availability_table.setColumnCount(len(days_of_week))
+        availability_table.setRowCount(len(hour_labels))
+        availability_table.setHorizontalHeaderLabels(days_of_week)
+        availability_table.setVerticalHeaderLabels(hour_labels)
+        for row in range(len(hour_labels)):
+            for col in range(len(days_of_week)):
+                item = QTableWidgetItem("Available")
+                item.setBackground(QtGui.QColor(0, 255, 0))
+                availability_table.setItem(row, col, item)
+        availability_table.cellClicked.connect(lambda row, col: self.changeCellColor(row, col))
+        return availability_table
+
     def addInstructorButtonClicked(self):
         instructor_dialog = QDialog(self)
         instructor_dialog.setFixedSize(self.new_window_size)
@@ -136,21 +150,9 @@ class TimeTableGenerator(QMainWindow):
         form_layout.addRow("Available Hours", self.lineEditHours)
         layout.addLayout(form_layout)
 
-        self.availability_table = QTableWidget()
-        self.availability_table.setColumnCount(5)  # Days of week
-        self.availability_table.setRowCount(9)    # Hours
         days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         hour_labels = ["9:00", "9:50","10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
-        self.availability_table.setHorizontalHeaderLabels(days_of_week)
-        self.availability_table.setVerticalHeaderLabels(hour_labels)
-
-        for row in range(9):
-            for col in range(6):
-                item = QTableWidgetItem("Available")
-                item.setBackground(QtGui.QColor(0, 255, 0))
-                self.availability_table.setItem(row, col, item)
-
-        self.availability_table.cellClicked.connect(lambda row, col: self.changeCellColor(row, col))
+        self.availability_table = self.create_availability_table(days_of_week, hour_labels)
         layout.addWidget(self.availability_table)
         
         button_layout = QHBoxLayout()
@@ -196,33 +198,21 @@ class TimeTableGenerator(QMainWindow):
         type_group.setLayout(type_layout)
         layout.addWidget(type_group)
 
-        self.availability_table = QTableWidget()
-        self.availability_table.setColumnCount(6)  # Days of week
-        self.availability_table.setRowCount(9)     # Hours
         days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        self.availability_table.setHorizontalHeaderLabels(days_of_week)
         hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
-        self.availability_table.setVerticalHeaderLabels(hour_labels)
-        
-        for row in range(9):
-            for col in range(6):
-                item = QTableWidgetItem("Available")
-                item.setBackground(QtGui.QColor(0, 255, 0))
-                self.availability_table.setItem(row, col, item)
-        
-        self.availability_table.cellClicked.connect(lambda row, col: self.changeCellColor(row, col))
+        self.availability_table = self.create_availability_table(days_of_week, hour_labels)
         layout.addWidget(self.availability_table)
 
         button_layout = QHBoxLayout()
         finish_button = QPushButton("Finish")
-        finish_button.clicked.connect(lambda: self.processRoomData(room_dialog, self.availability_table))
+        finish_button.clicked.connect(lambda: self.processRoomData(room_dialog))
         cancel_button = QPushButton("Cancel")
         cancel_button.clicked.connect(room_dialog.reject)
         button_layout.addWidget(finish_button)
         button_layout.addWidget(cancel_button)
         layout.addLayout(button_layout)
         room_dialog.setLayout(layout)
-        room_dialog.finished.connect(lambda result: self.cleanupRoomDialog())
+        room_dialog.finished.connect(self.cleanupRoomDialog)
         room_dialog.exec_()
 
     def cleanupRoomDialog(self):
@@ -281,7 +271,6 @@ class TimeTableGenerator(QMainWindow):
                     for line in file:
                         csv_data.append(line.strip().split(','))
 
-                # Get the current tab and table widget to add the CSV data
                 current_tab_index = self.tabs.currentIndex()
                 current_table = self.tabs.widget(current_tab_index).findChildren(QTableWidget)[0]
                 current_table.setRowCount(0)
@@ -313,22 +302,11 @@ class TimeTableGenerator(QMainWindow):
         self.stay_in_room_checkbox = QCheckBox("Stay in Room")
         layout.addWidget(self.stay_in_room_checkbox)
 
-        self.availability_table = QTableWidget()
-        self.availability_table.setColumnCount(6)  # Days of week
-        self.availability_table.setRowCount(9)     # Hours
         days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        self.availability_table.setHorizontalHeaderLabels(days_of_week)
         hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
-        self.availability_table.setVerticalHeaderLabels(hour_labels)
-
-        for row in range(9):
-            for col in range(6):
-                item = QTableWidgetItem("Available")
-                item.setBackground(QtGui.QColor(0, 255, 0))
-                self.availability_table.setItem(row, col, item)
-        
-        self.availability_table.cellClicked.connect(lambda row, col: self.changeCellColor(row, col))
+        self.availability_table = self.create_availability_table(days_of_week, hour_labels)
         layout.addWidget(self.availability_table)
+
         button_layout = QHBoxLayout()
         finish_button = QPushButton("Finish")
         finish_button.clicked.connect(lambda: self.processSectionData(section_dialog))
@@ -344,11 +322,10 @@ class TimeTableGenerator(QMainWindow):
     def cleanupSectionDialog(self):
         self.availability_table.cellClicked.disconnect()
 
+    def processRoomData(self, dialog):
+        dialog.accept()
+
     def processSectionData(self, dialog):
-        section_name = self.section_name_lineEdit.text()
-        stay_in_room = self.stay_in_room_checkbox.isChecked()
-        print("Section Name:", section_name)
-        print("Stay in Room:", stay_in_room)
         dialog.accept()
 
 if __name__ == '__main__':
