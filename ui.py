@@ -1,8 +1,8 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon
-import sys
 import warnings
+import sys
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -42,11 +42,11 @@ class TimeTableGenerator(QMainWindow):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
-        self.createTab("Instructors", ["Available", "Name", "Hours", "Operation"])
-        self.createTab("Rooms", ["Available", "Name", "Operation"])
-        self.createTab("Subjects", ["Code", "Name", "Type", "Instructors", "Operation"])
-        self.createTab("Sections", ["Available", "Name", "Stay in Room", "Operation"])
-        self.createTab("Scenario Manager", [])  # No columns for Scenario Manager
+        tab_titles = ["Instructors", "Rooms", "Subjects", "Sections", "Scenario Manager"]
+        tab_columns = [["Available", "Name", "Hours", "Operation"], ["Available", "Name", "Operation"], ["Code", "Name", "Type", "Instructors", "Operation"], ["Available", "Name", "Stay in Room", "Operation"], []]
+
+        for title, columns in zip(tab_titles, tab_columns):
+            self.createTab(title, columns)
 
     def createTab(self, title, columns):
         tab = QWidget()
@@ -63,15 +63,20 @@ class TimeTableGenerator(QMainWindow):
             add_button = QPushButton(f"Add {title[:-1]}", self)
             if title == "Instructors":
                 add_button.clicked.connect(self.addInstructorButtonClicked)
+            elif title == "Rooms":
+                add_button.clicked.connect(self.addRoomButtonClicked)
             elif title == "Subjects":
                 add_button.clicked.connect(self.addSubjectButtonClicked)
+            elif title == "Sections":
+                add_button.clicked.connect(self.addSectionButtonClicked)
             else:
                 add_button.clicked.connect(lambda: self.addButtonClicked(title))
             add_button_layout.addWidget(add_button)
 
-            import_button = QPushButton("Import from CSV", self)
-            import_button.clicked.connect(self.importButtonClicked)
-            add_button_layout.addWidget(import_button)
+            if title != "Sections":
+                import_button = QPushButton("Import from CSV", self)
+                import_button.clicked.connect(self.importButtonClicked)
+                add_button_layout.addWidget(import_button)
 
             add_button_widget = QWidget()
             add_button_widget.setLayout(add_button_layout)
@@ -112,12 +117,6 @@ class TimeTableGenerator(QMainWindow):
     def about(self):
         print("About")
 
-    def addButtonClicked(self, title):
-        self.new_window = QMainWindow()
-        self.new_window.setWindowTitle(title)
-        self.new_window.setFixedSize(self.new_window_size)
-        print(f"Add {title} Clicked")
-
     def calculateNewWindowSize(self):
         main_window_size = self.size()
         new_window_width = main_window_size.width() * 0.8
@@ -130,16 +129,29 @@ class TimeTableGenerator(QMainWindow):
         instructor_dialog.setWindowTitle("Instructor")
         
         layout = QVBoxLayout()
-        
         form_layout = QFormLayout()
         self.lineEditName = QLineEdit()
         self.lineEditHours = QLineEdit()
         form_layout.addRow("Name", self.lineEditName)
         form_layout.addRow("Available Hours", self.lineEditHours)
         layout.addLayout(form_layout)
-        
-        self.tableSchedule = QTableView()
-        layout.addWidget(self.tableSchedule)
+
+        self.availability_table = QTableWidget()
+        self.availability_table.setColumnCount(5)  # Days of week
+        self.availability_table.setRowCount(9)    # Hours
+        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        hour_labels = ["9:00", "9:50","10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
+        self.availability_table.setHorizontalHeaderLabels(days_of_week)
+        self.availability_table.setVerticalHeaderLabels(hour_labels)
+
+        for row in range(9):
+            for col in range(6):
+                item = QTableWidgetItem("Available")
+                item.setBackground(QtGui.QColor(0, 255, 0))
+                self.availability_table.setItem(row, col, item)
+
+        self.availability_table.cellClicked.connect(lambda row, col: self.changeCellColor(row, col))
+        layout.addWidget(self.availability_table)
         
         button_layout = QHBoxLayout()
         self.btnFinish = QPushButton("Finish")
@@ -152,13 +164,76 @@ class TimeTableGenerator(QMainWindow):
         instructor_dialog.setLayout(layout)
         instructor_dialog.exec_()
 
+    def changeCellColor(self, row, col):
+        current_item = self.availability_table.item(row, col)
+        current_color = current_item.background().color()
+
+        if current_color == QtGui.QColor(0, 255, 0):  # Check if the current color is the custom green color
+            current_item.setBackground(QtGui.QColor("red"))
+            current_item.setText("Unavailable")
+        else:
+            current_item.setBackground(QtGui.QColor(0, 255, 0))
+            current_item.setText("Available")
+        self.availability_table.clearSelection()
+
+    def addRoomButtonClicked(self):
+        room_dialog = QDialog(self)
+        room_dialog.setFixedSize(self.new_window_size)
+        room_dialog.setWindowTitle("Add Room")
+
+        layout = QVBoxLayout()
+        name_label = QLabel("Name:")
+        self.room_name_lineEdit = QLineEdit()
+        layout.addWidget(name_label)
+        layout.addWidget(self.room_name_lineEdit)
+
+        type_group = QGroupBox("Type")
+        type_layout = QHBoxLayout()
+        self.radio_lab = QRadioButton("Laboratory")
+        self.radio_lec = QRadioButton("Lecture")
+        type_layout.addWidget(self.radio_lab)
+        type_layout.addWidget(self.radio_lec)
+        type_group.setLayout(type_layout)
+        layout.addWidget(type_group)
+
+        self.availability_table = QTableWidget()
+        self.availability_table.setColumnCount(6)  # Days of week
+        self.availability_table.setRowCount(9)     # Hours
+        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        self.availability_table.setHorizontalHeaderLabels(days_of_week)
+        hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
+        self.availability_table.setVerticalHeaderLabels(hour_labels)
+        
+        for row in range(9):
+            for col in range(6):
+                item = QTableWidgetItem("Available")
+                item.setBackground(QtGui.QColor(0, 255, 0))
+                self.availability_table.setItem(row, col, item)
+        
+        self.availability_table.cellClicked.connect(lambda row, col: self.changeCellColor(row, col))
+        layout.addWidget(self.availability_table)
+
+        button_layout = QHBoxLayout()
+        finish_button = QPushButton("Finish")
+        finish_button.clicked.connect(lambda: self.processRoomData(room_dialog, self.availability_table))
+        cancel_button = QPushButton("Cancel")
+        cancel_button.clicked.connect(room_dialog.reject)
+        button_layout.addWidget(finish_button)
+        button_layout.addWidget(cancel_button)
+        layout.addLayout(button_layout)
+        room_dialog.setLayout(layout)
+        room_dialog.finished.connect(lambda result: self.cleanupRoomDialog())
+        room_dialog.exec_()
+
+    def cleanupRoomDialog(self):
+        self.availability_table.cellClicked.disconnect()
+
     def addSubjectButtonClicked(self):
         subject_dialog = QDialog(self)
         subject_dialog.setFixedSize(self.new_window_size)
         subject_dialog.setWindowTitle("Subject")
 
         layout = QVBoxLayout()
-
         grid_layout = QGridLayout()
         self.lineEditName = QLineEdit()
         self.lineEditHours = QLineEdit()
@@ -173,7 +248,6 @@ class TimeTableGenerator(QMainWindow):
         grid_layout.addWidget(self.lineEditCode, 1, 1)
         grid_layout.addWidget(QLabel("Description:"), 1, 2)
         grid_layout.addWidget(self.lineEditDescription, 1, 3)
-
         layout.addLayout(grid_layout)
 
         group_type = QGroupBox("Type")
@@ -225,6 +299,57 @@ class TimeTableGenerator(QMainWindow):
 
     def viewResultButtonClicked(self):
         print("View Result Button Clicked")
+
+    def addSectionButtonClicked(self):
+        section_dialog = QDialog(self)
+        section_dialog.setFixedSize(self.new_window_size)
+        section_dialog.setWindowTitle("Add Section")
+
+        layout = QVBoxLayout()
+        name_label = QLabel("Name:")
+        self.section_name_lineEdit = QLineEdit()
+        layout.addWidget(name_label)
+        layout.addWidget(self.section_name_lineEdit)
+        self.stay_in_room_checkbox = QCheckBox("Stay in Room")
+        layout.addWidget(self.stay_in_room_checkbox)
+
+        self.availability_table = QTableWidget()
+        self.availability_table.setColumnCount(6)  # Days of week
+        self.availability_table.setRowCount(9)     # Hours
+        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        self.availability_table.setHorizontalHeaderLabels(days_of_week)
+        hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
+        self.availability_table.setVerticalHeaderLabels(hour_labels)
+
+        for row in range(9):
+            for col in range(6):
+                item = QTableWidgetItem("Available")
+                item.setBackground(QtGui.QColor(0, 255, 0))
+                self.availability_table.setItem(row, col, item)
+        
+        self.availability_table.cellClicked.connect(lambda row, col: self.changeCellColor(row, col))
+        layout.addWidget(self.availability_table)
+        button_layout = QHBoxLayout()
+        finish_button = QPushButton("Finish")
+        finish_button.clicked.connect(lambda: self.processSectionData(section_dialog))
+        cancel_button = QPushButton("Cancel")
+        cancel_button.clicked.connect(section_dialog.reject)
+        button_layout.addWidget(finish_button)
+        button_layout.addWidget(cancel_button)
+        layout.addLayout(button_layout)
+        section_dialog.setLayout(layout)
+        section_dialog.finished.connect(self.cleanupSectionDialog)
+        section_dialog.exec_()
+
+    def cleanupSectionDialog(self):
+        self.availability_table.cellClicked.disconnect()
+
+    def processSectionData(self, dialog):
+        section_name = self.section_name_lineEdit.text()
+        stay_in_room = self.stay_in_room_checkbox.isChecked()
+        print("Section Name:", section_name)
+        print("Stay in Room:", stay_in_room)
+        dialog.accept()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
