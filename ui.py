@@ -8,7 +8,6 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 class TimeTableGenerator(QMainWindow):
     def __init__(self):
         super().__init__()
-
         self.initUI()
 
     def initUI(self):
@@ -52,7 +51,6 @@ class TimeTableGenerator(QMainWindow):
         self.tabs.addTab(tab, title)
 
         layout = QVBoxLayout()
-        
         table = QTableWidget()
         table.setColumnCount(len(columns))
         table.setHorizontalHeaderLabels(columns)
@@ -72,7 +70,6 @@ class TimeTableGenerator(QMainWindow):
             add_button_widget.setLayout(add_button_layout)
             layout.addWidget(add_button_widget)
         else:
-            # Add buttons for Scenario Manager
             scenario_buttons_layout = QHBoxLayout()
 
             generate_button = QPushButton("Generate", self)
@@ -88,7 +85,6 @@ class TimeTableGenerator(QMainWindow):
             layout.addWidget(scenario_buttons_widget)
 
         tab.setLayout(layout)
-
         if title == "Subjects":
             table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
@@ -124,33 +120,22 @@ class TimeTableGenerator(QMainWindow):
         if filename:
             try:
                 with open(filename, 'r') as file:
-                    # Read the CSV data
-                    csv_data = []
+                    csv_data = [] # Read the CSV data
                     for line in file:
                         csv_data.append(line.strip().split(','))
 
-                # Get the current tab and table widget
+                # Get the current tab and table widget to add the CSV data
                 current_tab_index = self.tabs.currentIndex()
-                current_tab_widget = self.tabs.widget(current_tab_index)
-                table_widget = current_tab_widget.findChild(QTableWidget)
+                current_table = self.tabs.widget(current_tab_index).findChildren(QTableWidget)[0]
+                current_table.setRowCount(0)
 
-                # Get column names
-                column_names = [table_widget.horizontalHeaderItem(i).text() for i in range(table_widget.columnCount())]
-
-                # Check if CSV columns match table columns
-                if csv_data and csv_data[0] != column_names:
-                    QMessageBox.warning(self, "Warning", "CSV columns do not match table columns.", QMessageBox.Ok)
-                    return
-
-                # Add data to the table
-                table_widget.setRowCount(0)
-                for row_data in csv_data[1:]:
-                    row_position = table_widget.rowCount()
-                    table_widget.insertRow(row_position)
-                    for column_position, item_data in enumerate(row_data):
-                        table_widget.setItem(row_position, column_position, QTableWidgetItem(item_data))
+                for row_data in csv_data: # Add CSV data to the table
+                    current_table.insertRow(current_table.rowCount())
+                    for index, col_data in enumerate(row_data):
+                        new_item = QTableWidgetItem(col_data)
+                        current_table.setItem(current_table.rowCount() - 1, index, new_item)
             except Exception as e:
-                QMessageBox.critical(self, "Error", str(e), QMessageBox.Ok)
+                print("Error during import operation:", e)
 
     def generateButtonClicked(self):
         print("Generate Button Clicked")
@@ -160,6 +145,6 @@ class TimeTableGenerator(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = TimeTableGenerator()
-    window.show()
+    win = TimeTableGenerator()
+    win.show()
     sys.exit(app.exec_())
