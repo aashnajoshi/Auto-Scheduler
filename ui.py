@@ -4,7 +4,9 @@ from PyQt5.QtGui import QIcon
 import warnings
 import sys
 
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+# To open Designer: qt5-tools designer
+# To convert .ui file to .py file: pyuic5 -x filename.ui -o filename.py
 
 class TimeTableGenerator(QMainWindow):
     def __init__(self):
@@ -16,7 +18,6 @@ class TimeTableGenerator(QMainWindow):
         self.setFixedSize(716, 553)
         self.setWindowTitle("Time Table Generator")
         self.setWindowIcon(QIcon('icon.png'))
-
         self.createMenuBar()
         self.createWidgets()
 
@@ -129,6 +130,7 @@ class TimeTableGenerator(QMainWindow):
         availability_table.setRowCount(len(hour_labels))
         availability_table.setHorizontalHeaderLabels(days_of_week)
         availability_table.setVerticalHeaderLabels(hour_labels)
+
         for row in range(len(hour_labels)):
             for col in range(len(days_of_week)):
                 item = QTableWidgetItem("Available")
@@ -280,6 +282,7 @@ class TimeTableGenerator(QMainWindow):
                     for index, col_data in enumerate(row_data):
                         new_item = QTableWidgetItem(col_data)
                         current_table.setItem(current_table.rowCount() - 1, index, new_item)
+
             except Exception as e:
                 print("Error during import operation:", e)
 
@@ -327,6 +330,8 @@ class TimeTableGenerator(QMainWindow):
 
     def processSectionData(self, dialog):
         dialog.accept()
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
