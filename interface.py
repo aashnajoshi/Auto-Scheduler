@@ -8,8 +8,13 @@ def classesui():
     print("list of classes")
     for name in names['name']:
         print(name)
+<<<<<<< Updated upstream
     print("1. Add class")
     print("2. Delete class")
+=======
+    print("1. Add class",end=" ")
+    print("2. Delete class",end=" ")
+>>>>>>> Stashed changes
     print("0. Back")
     i=int(input("Enter choice: "))
     if i==1:
