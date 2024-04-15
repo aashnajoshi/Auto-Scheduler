@@ -46,7 +46,7 @@ def assign_labs(cls):
     # print("labs alloted "+cls)
     lab_sub= get_sub(cls,1)
     lab_and_teachers =get_data(cls,1)
-    lec_for_labs=[(1,5,6),(1,3,4),(2,3,4),(2,6,7),(4,5,6),(4,3,4),(5,3,4),(5,6,7)]
+    lec_for_labs=[(1,5,6),(1,3,4),(2,3,4),(2,6,7),(4,5,6),(4,3,4),(5,3,4),(5,6,7)]#(day,lec1,lec2)
     for selected_sub in lab_sub:
         lecs=[x for x in lec_for_labs]
         num_of_lec=len(lec_for_labs)
