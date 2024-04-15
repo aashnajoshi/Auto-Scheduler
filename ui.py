@@ -9,6 +9,9 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 # To open Designer: qt5-tools designer
 # To convert .ui file to .py file: pyuic5 -x filename.ui -o filename.py
 
+days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
+
 class TimeTableGenerator(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -45,7 +48,7 @@ class TimeTableGenerator(QMainWindow):
         self.setCentralWidget(self.tabs)
 
         tab_titles = ["Instructors", "Rooms", "Subjects", "Sections", "Scenario Manager"]
-        tab_columns = [["Available", "Name", "Hours", "Operation"], ["Available", "Name", "Operation"], ["Code", "Name", "Type", "Instructors", "Operation"], ["Available", "Name", "Stay in Room", "Operation"], []]
+        tab_columns = [["Available", "Name", "Hours", "Operation"], ["Available", "Name","Type", "Operation"], ["Code", "Name", "Type", "Instructors", "Operation"], ["Available", "Name", "Stay in Room", "Operation"], []]
 
         for title, columns in zip(tab_titles, tab_columns):
             self.createTab(title, columns)
@@ -77,8 +80,8 @@ class TimeTableGenerator(QMainWindow):
 
             if title != "Sections":
                 import_button = QPushButton("Import from CSV", self)
-                import_button.clicked.connect(self.importButtonClicked)
                 add_button_layout.addWidget(import_button)
+                import_button.clicked.connect(self.importButtonClicked)
 
             add_button_widget = QWidget()
             add_button_widget.setLayout(add_button_layout)
@@ -87,12 +90,12 @@ class TimeTableGenerator(QMainWindow):
             scenario_buttons_layout = QHBoxLayout()
 
             generate_button = QPushButton("Generate", self)
-            generate_button.clicked.connect(self.generateButtonClicked)
             scenario_buttons_layout.addWidget(generate_button)
+            generate_button.clicked.connect(self.generateButtonClicked)
 
             view_result_button = QPushButton("View Result", self)
-            view_result_button.clicked.connect(self.viewResultButtonClicked)
             scenario_buttons_layout.addWidget(view_result_button)
+            view_result_button.clicked.connect(self.viewResultButtonClicked)
 
             scenario_buttons_widget = QWidget()
             scenario_buttons_widget.setLayout(scenario_buttons_layout)
@@ -148,22 +151,21 @@ class TimeTableGenerator(QMainWindow):
         layout = QVBoxLayout()
         form_layout = QFormLayout()
         self.lineEditName = QLineEdit()
-        self.lineEditHours = QLineEdit()
         form_layout.addRow("Name", self.lineEditName)
+        self.lineEditHours = QLineEdit()
         form_layout.addRow("Available Hours", self.lineEditHours)
         layout.addLayout(form_layout)
 
-        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-        hour_labels = ["9:00", "9:50","10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
         self.availability_table = self.create_availability_table(days_of_week, hour_labels)
         layout.addWidget(self.availability_table)
         
         button_layout = QHBoxLayout()
         self.btnFinish = QPushButton("Finish")
-        self.btnCancel = QPushButton("Cancel")
-        self.btnCancel.clicked.connect(instructor_dialog.close)  # Connect cancel button to close window
         button_layout.addWidget(self.btnFinish)
+        self.btnFinish.clicked.connect(lambda: self.ProcessData("Instructor"))
+        self.btnCancel = QPushButton("Cancel")
         button_layout.addWidget(self.btnCancel)
+        self.btnCancel.clicked.connect(instructor_dialog.close)
         layout.addLayout(button_layout)
         
         instructor_dialog.setLayout(layout)
@@ -173,7 +175,7 @@ class TimeTableGenerator(QMainWindow):
         current_item = self.availability_table.item(row, col)
         current_color = current_item.background().color()
 
-        if current_color == QtGui.QColor(0, 255, 0):  # Check if the current color is the custom green color
+        if current_color == QtGui.QColor(0, 255, 0):
             current_item.setBackground(QtGui.QColor("red"))
             current_item.setText("Unavailable")
         else:
@@ -195,27 +197,24 @@ class TimeTableGenerator(QMainWindow):
         type_group = QGroupBox("Type")
         type_layout = QHBoxLayout()
         self.radio_lab = QRadioButton("Laboratory")
-        self.radio_lec = QRadioButton("Lecture")
         type_layout.addWidget(self.radio_lab)
+        self.radio_lec = QRadioButton("Lecture")
         type_layout.addWidget(self.radio_lec)
         type_group.setLayout(type_layout)
         layout.addWidget(type_group)
-
-        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
         self.availability_table = self.create_availability_table(days_of_week, hour_labels)
         layout.addWidget(self.availability_table)
 
         button_layout = QHBoxLayout()
         finish_button = QPushButton("Finish")
-        finish_button.clicked.connect(lambda: self.processRoomData(room_dialog))
-        cancel_button = QPushButton("Cancel")
-        cancel_button.clicked.connect(room_dialog.reject)
         button_layout.addWidget(finish_button)
+        finish_button.clicked.connect(lambda: self.ProcessData("Room"))
+        cancel_button = QPushButton("Cancel")
         button_layout.addWidget(cancel_button)
+        cancel_button.clicked.connect(room_dialog.reject)
         layout.addLayout(button_layout)
         room_dialog.setLayout(layout)
-        room_dialog.finished.connect(self.cleanupRoomDialog)
+        # room_dialog.finished.connect(self.cleanupRoomDialog)
         room_dialog.exec_()
 
     def cleanupRoomDialog(self):
@@ -257,6 +256,7 @@ class TimeTableGenerator(QMainWindow):
         button_layout = QHBoxLayout()
         self.btnFinish = QPushButton("Finish")
         button_layout.addWidget(self.btnFinish)
+        self.btnFinish.clicked.connect(lambda: self.ProcessData("Subject"))
         self.btnCancel = QPushButton("Cancel")
         button_layout.addWidget(self.btnCancel)
         self.btnCancel.clicked.connect(subject_dialog.close)
@@ -305,15 +305,12 @@ class TimeTableGenerator(QMainWindow):
         layout.addWidget(self.section_name_lineEdit)
         self.stay_in_room_checkbox = QCheckBox("Stay in Room")
         layout.addWidget(self.stay_in_room_checkbox)
-
-        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
         self.availability_table = self.create_availability_table(days_of_week, hour_labels)
         layout.addWidget(self.availability_table)
 
         button_layout = QHBoxLayout()
         finish_button = QPushButton("Finish")
-        finish_button.clicked.connect(lambda: self.processSectionData(section_dialog))
+        finish_button.clicked.connect(lambda: self.ProcessData("Section"))
         cancel_button = QPushButton("Cancel")
         cancel_button.clicked.connect(section_dialog.reject)
         button_layout.addWidget(finish_button)
@@ -326,11 +323,136 @@ class TimeTableGenerator(QMainWindow):
     def cleanupSectionDialog(self):
         self.availability_table.cellClicked.disconnect()
 
-    def processRoomData(self, dialog):
-        dialog.accept()
+    def ProcessData(self, type):
+        current_tab_index = self.tabs.currentIndex()
+        current_tab_title = self.tabs.tabText(current_tab_index)
+        current_table = self.tabs.widget(current_tab_index).findChild(QTableWidget)
 
-    def processSectionData(self, dialog):
-        dialog.accept()
+        if current_tab_title == "Instructors":
+            name = self.lineEditName.text()
+            hours = self.lineEditHours.text()
+
+            row_position = current_table.rowCount()
+            current_table.insertRow(row_position)
+            current_table.setItem(row_position, 0, QTableWidgetItem("Available"))
+            current_table.setItem(row_position, 1, QTableWidgetItem(name))
+            current_table.setItem(row_position, 2, QTableWidgetItem(hours))
+
+            edit_button = QPushButton("Edit")
+            edit_button.clicked.connect(lambda: self.editEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 3, edit_button)
+
+            delete_button = QPushButton("Delete")
+            delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 4, delete_button)
+        
+        elif current_tab_title == "Rooms":
+            name = self.room_name_lineEdit.text()
+            room_type = "Laboratory" if self.radio_lab.isChecked() else "Lecture"
+
+            row_position = current_table.rowCount()
+            current_table.insertRow(row_position)
+            current_table.setItem(row_position, 0, QTableWidgetItem("Available"))
+            current_table.setItem(row_position, 1, QTableWidgetItem(name))
+            current_table.setItem(row_position, 2, QTableWidgetItem(room_type))
+
+            edit_button = QPushButton("Edit")
+            edit_button.clicked.connect(lambda: self.editEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 3, edit_button)
+
+            delete_button = QPushButton("Delete")
+            delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 4, delete_button)
+        
+        elif current_tab_title == "Subjects":
+            name = self.lineEditName.text()
+            hours = self.lineEditHours.text()
+            code = self.lineEditCode.text()
+            description = self.lineEditDescription.text()
+            subject_type = "Lecture" if self.radioLec.isChecked() else "Laboratory" if self.radioLab.isChecked() else "Both"
+
+            row_position = current_table.rowCount()
+            current_table.insertRow(row_position)
+            current_table.setItem(row_position, 0, QTableWidgetItem(code))
+            current_table.setItem(row_position, 1, QTableWidgetItem(name))
+            current_table.setItem(row_position, 2, QTableWidgetItem(subject_type))
+            current_table.setItem(row_position, 3, QTableWidgetItem(hours))
+
+            edit_button = QPushButton("Edit")
+            edit_button.clicked.connect(lambda: self.editEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 4, edit_button)
+
+            delete_button = QPushButton("Delete")
+            delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 5, delete_button)
+
+        elif current_tab_title == "Sections":
+            name = self.section_name_lineEdit.text()
+            stay_in_room = self.stay_in_room_checkbox.isChecked()
+
+            row_position = current_table.rowCount()
+            current_table.insertRow(row_position)
+            current_table.setItem(row_position, 0, QTableWidgetItem("Available"))
+            current_table.setItem(row_position, 1, QTableWidgetItem(name))
+            current_table.setItem(row_position, 2, QTableWidgetItem("Yes" if stay_in_room else "No"))
+
+            edit_button = QPushButton("Edit")
+            edit_button.clicked.connect(lambda: self.editEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 3, edit_button)
+
+            delete_button = QPushButton("Delete")
+            delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 4, delete_button)
+        else:
+            print("Unknown type:", type)
+
+        self.lineEditName.clear() 
+        self.sender().parent().close() 
+
+    def editEntry(self, table, row, tab_title):
+        name_item = table.item(row, 1)
+        if name_item is not None:
+            name = name_item.text()
+            edit_dialog = QDialog(self)
+            edit_dialog.setFixedSize(self.new_window_size)
+            edit_dialog.setWindowTitle(f"Edit {tab_title[:-1]}")
+            
+            layout = QVBoxLayout()
+            form_layout = QFormLayout()
+
+            lineEdits = []
+            for col in range(1, table.columnCount()):
+                item = table.item(row, col)
+                if item is not None:
+                    lineEdit = QLineEdit(item.text())
+                    form_layout.addRow(table.horizontalHeaderItem(col).text(), lineEdit)
+                    lineEdits.append(lineEdit)
+            
+            layout.addLayout(form_layout)
+
+            if tab_title != "Scenario Manager":
+                availability_table = self.create_availability_table(days_of_week, hour_labels)
+                layout.addWidget(availability_table)
+            
+            button_layout = QHBoxLayout()
+            btnFinish = QPushButton("Finish")
+            btnFinish.clicked.connect(lambda: self.updateData(table, row, lineEdits))
+            button_layout.addWidget(btnFinish)
+            btnCancel = QPushButton("Cancel")
+            btnCancel.clicked.connect(edit_dialog.close)
+            button_layout.addWidget(btnCancel)
+            layout.addLayout(button_layout)
+            
+            edit_dialog.setLayout(layout)
+            edit_dialog.exec_()
+
+    def updateData(self, table, row, lineEdits):
+        for col, lineEdit in enumerate(lineEdits):
+            table.setItem(row, col + 1, QTableWidgetItem(lineEdit.text()))
+        self.sender().parent().close()
+
+    def deleteEntry(self, table, row, tab_title):
+        table.removeRow(row)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
