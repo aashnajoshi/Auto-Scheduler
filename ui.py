@@ -213,8 +213,8 @@ class TimeTableGenerator(QMainWindow):
         button_layout.addWidget(cancel_button)
         cancel_button.clicked.connect(room_dialog.reject)
         layout.addLayout(button_layout)
+
         room_dialog.setLayout(layout)
-        # room_dialog.finished.connect(self.cleanupRoomDialog)
         room_dialog.exec_()
 
     def cleanupRoomDialog(self):
@@ -406,7 +406,6 @@ class TimeTableGenerator(QMainWindow):
         else:
             print("Unknown type:", type)
 
-        self.lineEditName.clear() 
         self.sender().parent().close() 
 
     def editEntry(self, table, row, tab_title):
@@ -416,43 +415,66 @@ class TimeTableGenerator(QMainWindow):
             edit_dialog = QDialog(self)
             edit_dialog.setFixedSize(self.new_window_size)
             edit_dialog.setWindowTitle(f"Edit {tab_title[:-1]}")
-            
+
             layout = QVBoxLayout()
-            form_layout = QFormLayout()
-
+            grid_layout = QGridLayout()
             lineEdits = []
-            for col in range(1, table.columnCount()):
-                item = table.item(row, col)
-                if item is not None:
-                    lineEdit = QLineEdit(item.text())
-                    form_layout.addRow(table.horizontalHeaderItem(col).text(), lineEdit)
-                    lineEdits.append(lineEdit)
-            
-            layout.addLayout(form_layout)
 
-            if tab_title != "Scenario Manager":
-                availability_table = self.create_availability_table(days_of_week, hour_labels)
-                layout.addWidget(availability_table)
-            
+            # Populate the edit window with existing data
+            column_names = [table.horizontalHeaderItem(col).text() for col in range(1, table.columnCount())]
+            for col, column_name in enumerate(column_names):
+                label = QLabel(column_name + ":")
+                lineEdit = QLineEdit(table.item(row, col + 1).text())
+                grid_layout.addWidget(label, col, 0)
+                grid_layout.addWidget(lineEdit, col, 1)
+                lineEdits.append(lineEdit)
+
+            layout.addLayout(grid_layout)
+
+            if tab_title == "Subjects":
+                group_type = QGroupBox("Type")
+                group_type_layout = QHBoxLayout()
+                radioLec = QRadioButton("Lecture")
+                radioLab = QRadioButton("Laboratory")
+                radioBoth = QRadioButton("Both")
+
+                # Select the appropriate radio button based on existing data
+                subject_type = table.item(row, 2).text()
+                if subject_type == "Lecture":
+                    radioLec.setChecked(True)
+                elif subject_type == "Laboratory":
+                    radioLab.setChecked(True)
+                else:
+                    radioBoth.setChecked(True)
+
+                group_type_layout.addWidget(radioLec)
+                group_type_layout.addWidget(radioLab)
+                group_type_layout.addWidget(radioBoth)
+                group_type.setLayout(group_type_layout)
+                layout.addWidget(group_type)
+
             button_layout = QHBoxLayout()
             btnFinish = QPushButton("Finish")
-            btnFinish.clicked.connect(lambda: self.updateData(table, row, lineEdits))
+            if tab_title == "Subjects":
+                btnFinish.clicked.connect(lambda: self.updateData(table, row, lineEdits, [radioLec.isChecked(), radioLab.isChecked(), radioBoth.isChecked()]))
+            else:
+                btnFinish.clicked.connect(lambda: self.updateData(table, row, lineEdits))
             button_layout.addWidget(btnFinish)
             btnCancel = QPushButton("Cancel")
             btnCancel.clicked.connect(edit_dialog.close)
             button_layout.addWidget(btnCancel)
             layout.addLayout(button_layout)
-            
+
             edit_dialog.setLayout(layout)
             edit_dialog.exec_()
 
-    def updateData(self, table, row, lineEdits):
+    def updateData(self, table, row, lineEdits, radio_states):
         for col, lineEdit in enumerate(lineEdits):
             table.setItem(row, col + 1, QTableWidgetItem(lineEdit.text()))
+        subject_type = "Lecture" if radio_states[0] else "Laboratory" if radio_states[1] else "Both"
+        table.setItem(row, 2, QTableWidgetItem(subject_type))
         self.sender().parent().close()
 
-    def deleteEntry(self, table, row, tab_title):
-        table.removeRow(row)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
