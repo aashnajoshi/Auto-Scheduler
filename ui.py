@@ -96,10 +96,6 @@ class TimeTableGenerator(QMainWindow):
                 add_button.clicked.connect(self.addLabsButtonClicked)
             elif title == "Subjects":
                 add_button.clicked.connect(self.addSubjectsButtonClicked)
-            else:
-                add_button.clicked.connect(lambda: self.addButtonClicked(title))
-            add_button_layout.addWidget(add_button)
-
             if title != "Subjects":
                 import_button = QPushButton("Import from CSV", self)
                 add_button_layout.addWidget(import_button)
@@ -108,6 +104,7 @@ class TimeTableGenerator(QMainWindow):
             add_button_widget = QWidget()
             add_button_widget.setLayout(add_button_layout)
             layout.addWidget(add_button_widget)
+
         else:
             scenario_buttons_layout = QHBoxLayout()
 
@@ -126,8 +123,7 @@ class TimeTableGenerator(QMainWindow):
     def addInstructorsButtonClicked(self):
         add_dialog = QDialog(self)
         add_dialog.setFixedSize(self.new_window_size)
-        add_dialog.setWindowTitle("Add Instructor")
-
+        add_dialog.setWindowTitle("Add Instructors")
         layout = QVBoxLayout()
         grid_layout = QGridLayout()
         self.lineEditName = QLineEdit()
@@ -137,7 +133,6 @@ class TimeTableGenerator(QMainWindow):
         grid_layout.addWidget(self.lineEditName, 0, 1)
         grid_layout.addWidget(QLabel("Hours:"), 1, 0)
         grid_layout.addWidget(self.lineEditHours, 1, 1)
-
         layout.addLayout(grid_layout)
 
         button_layout = QHBoxLayout()
@@ -155,8 +150,7 @@ class TimeTableGenerator(QMainWindow):
     def addClassesButtonClicked(self):
         add_dialog = QDialog(self)
         add_dialog.setFixedSize(self.new_window_size)
-        add_dialog.setWindowTitle("Add Class")
-
+        add_dialog.setWindowTitle("Add Classes")
         layout = QVBoxLayout()
         grid_layout = QGridLayout()
         self.class_name_lineEdit = QLineEdit()
@@ -165,11 +159,15 @@ class TimeTableGenerator(QMainWindow):
 
         grid_layout.addWidget(QLabel("Name:"), 0, 0)
         grid_layout.addWidget(self.class_name_lineEdit, 0, 1)
-        grid_layout.addWidget(QLabel("Type:"), 1, 0)
-        grid_layout.addWidget(self.radio_lab, 1, 1)
-        grid_layout.addWidget(self.radio_lec, 1, 2)
-
         layout.addLayout(grid_layout)
+
+        group_type = QGroupBox("Type")
+        group_type_layout = QHBoxLayout()
+        group_type_layout.addWidget(self.radio_lab)
+        group_type_layout.addWidget(self.radio_lec)
+        group_type.setLayout(group_type_layout)
+        layout.addWidget(group_type)
+
 
         button_layout = QHBoxLayout()
         btnFinish = QPushButton("Finish")
@@ -186,7 +184,7 @@ class TimeTableGenerator(QMainWindow):
     def addLabsButtonClicked(self):
         add_dialog = QDialog(self)
         add_dialog.setFixedSize(self.new_window_size)
-        add_dialog.setWindowTitle("Add Lab")
+        add_dialog.setWindowTitle("Add Labs")
 
         layout = QVBoxLayout()
         grid_layout = QGridLayout()
@@ -194,7 +192,6 @@ class TimeTableGenerator(QMainWindow):
 
         grid_layout.addWidget(QLabel("Name:"), 0, 0)
         grid_layout.addWidget(self.lab_name_lineEdit, 0, 1)
-
         layout.addLayout(grid_layout)
 
         button_layout = QHBoxLayout()
@@ -212,36 +209,24 @@ class TimeTableGenerator(QMainWindow):
     def addSubjectsButtonClicked(self):
         add_dialog = QDialog(self)
         add_dialog.setFixedSize(self.new_window_size)
-        add_dialog.setWindowTitle("Add Subject")
+        add_dialog.setWindowTitle("Add Subjects")
 
         layout = QVBoxLayout()
         grid_layout = QGridLayout()
-        self.lineEditName = QLineEdit()
-        self.lineEditHours = QLineEdit()
         self.lineEditCode = QLineEdit()
-        self.lineEditDescription = QLineEdit()
-        self.radioLec = QRadioButton("Lecture")
-        self.radioLab = QRadioButton("Laboratory")
-        self.radioBoth = QRadioButton("Both")
+        self.lineEditName = QLineEdit()
+        self.lineEditClass = QLineEdit()
+        self.lineEditInstructor = QLineEdit()
 
-        grid_layout.addWidget(QLabel("Name:"), 0, 0)
-        grid_layout.addWidget(self.lineEditName, 0, 1)
-        grid_layout.addWidget(QLabel("Hours:"), 1, 0)
-        grid_layout.addWidget(self.lineEditHours, 1, 1)
-        grid_layout.addWidget(QLabel("Code:"), 2, 0)
-        grid_layout.addWidget(self.lineEditCode, 2, 1)
-        grid_layout.addWidget(QLabel("Description:"), 3, 0)
-        grid_layout.addWidget(self.lineEditDescription, 3, 1)
-
+        grid_layout.addWidget(QLabel("Code:"), 0, 0)
+        grid_layout.addWidget(self.lineEditCode, 0, 1)
+        grid_layout.addWidget(QLabel("Name:"), 1, 0)
+        grid_layout.addWidget(self.lineEditName, 1, 1)
+        grid_layout.addWidget(QLabel("Class:"), 2, 0)
+        grid_layout.addWidget(self.lineEditClass, 2, 1)
+        grid_layout.addWidget(QLabel("Instructor:"), 3, 0)
+        grid_layout.addWidget(self.lineEditInstructor, 3, 1)
         layout.addLayout(grid_layout)
-
-        group_type = QGroupBox("Type")
-        group_type_layout = QHBoxLayout()
-        group_type_layout.addWidget(self.radioLec)
-        group_type_layout.addWidget(self.radioLab)
-        group_type_layout.addWidget(self.radioBoth)
-        group_type.setLayout(group_type_layout)
-        layout.addWidget(group_type)
 
         button_layout = QHBoxLayout()
         btnFinish = QPushButton("Finish")
@@ -299,7 +284,7 @@ class TimeTableGenerator(QMainWindow):
             delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
             current_table.setCellWidget(row_position, 3, delete_button)
         
-        elif current_tab_title == "class":
+        elif current_tab_title == "Classes":
             name = self.class_name_lineEdit.text()
             class_type = "Laboratory" if self.radio_lab.isChecked() else "Lecture"
 
@@ -316,19 +301,33 @@ class TimeTableGenerator(QMainWindow):
             delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
             current_table.setCellWidget(row_position, 3, delete_button)
         
+        elif current_tab_title == "Labs":
+            name = self.lab_name_lineEdit.text()
+
+            row_position = current_table.rowCount()
+            current_table.insertRow(row_position)
+            current_table.setItem(row_position, 0, QTableWidgetItem(name))
+
+            edit_button = QPushButton("Edit")
+            edit_button.clicked.connect(lambda: self.editEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 1, edit_button)
+
+            delete_button = QPushButton("Delete")
+            delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
+            current_table.setCellWidget(row_position, 2, delete_button)
+        
         elif current_tab_title == "Subjects":
-            name = self.lineEditName.text()
-            hours = self.lineEditHours.text()
             code = self.lineEditCode.text()
-            description = self.lineEditDescription.text()
-            subject_type = "Lecture" if self.radioLec.isChecked() else "Laboratory" if self.radioLab.isChecked() else "Both"
+            name = self.lineEditName.text()
+            class_name = self.lineEditClass.text()
+            instructor = self.lineEditInstructor.text()
 
             row_position = current_table.rowCount()
             current_table.insertRow(row_position)
             current_table.setItem(row_position, 0, QTableWidgetItem(code))
             current_table.setItem(row_position, 1, QTableWidgetItem(name))
-            current_table.setItem(row_position, 2, QTableWidgetItem(subject_type))
-            current_table.setItem(row_position, 3, QTableWidgetItem(hours))
+            current_table.setItem(row_position, 2, QTableWidgetItem(class_name))
+            current_table.setItem(row_position, 3, QTableWidgetItem(instructor))
 
             edit_button = QPushButton("Edit")
             edit_button.clicked.connect(lambda: self.editEntry(current_table, row_position, current_tab_title))
@@ -338,91 +337,72 @@ class TimeTableGenerator(QMainWindow):
             delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
             current_table.setCellWidget(row_position, 5, delete_button)
 
-        elif current_tab_title == "Subjects":
-            name = self.section_name_lineEdit.text()
-            stay_in_class = self.stay_in_class_checkbox.isChecked()
-
-            row_position = current_table.rowCount()
-            current_table.insertRow(row_position)
-            current_table.setItem(row_position, 0, QTableWidgetItem("Available"))
-            current_table.setItem(row_position, 1, QTableWidgetItem(name))
-            current_table.setItem(row_position, 2, QTableWidgetItem("Yes" if stay_in_class else "No"))
-
-            edit_button = QPushButton("Edit")
-            edit_button.clicked.connect(lambda: self.editEntry(current_table, row_position, current_tab_title))
-            current_table.setCellWidget(row_position, 3, edit_button)
-
-            delete_button = QPushButton("Delete")
-            delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
-            current_table.setCellWidget(row_position, 4, delete_button)
+        elif current_tab_title == "Output Generator":
+            print("Output Generator tab selected")
         else:
-            print("Unknown type:", type)
+            print("Unknown type:", current_tab_title)
 
-        self.sender().parent().close() 
+        self.sender().parent().close()
 
     def editEntry(self, table, row, tab_title):
-        name_item = table.item(row, 1)
-        if name_item is not None:
-            name = name_item.text()
-            edit_dialog = QDialog(self)
-            edit_dialog.setFixedSize(self.new_window_size)
-            edit_dialog.setWindowTitle(f"Edit {tab_title[:-1]}")
+        edit_dialog = QDialog(self)
+        edit_dialog.setFixedSize(self.new_window_size)
+        edit_dialog.setWindowTitle(f"Edit {tab_title}")
 
-            layout = QVBoxLayout()
-            grid_layout = QGridLayout()
-            lineEdits = []
+        layout = QVBoxLayout()
+        grid_layout = QGridLayout()
+        lineEdits = []
+        radio_lab = QRadioButton("Laboratory")
+        radio_lec = QRadioButton("Lecture")
 
-            column_names = [table.horizontalHeaderItem(col).text() for col in range(1, table.columnCount())]
-            for col, column_name in enumerate(column_names):
-                label = QLabel(column_name + ":")
-                lineEdit = QLineEdit(table.item(row, col + 1).text())
+        column_names = [table.horizontalHeaderItem(col).text() for col in range(table.columnCount())]
+        for col, column_name in enumerate(column_names):
+            if column_name == "Operation":
+                continue
+            label = QLabel(column_name + ":")
+            item = table.item(row, col)
+            if item is not None:
+                if column_name == "Name":
+                    lineEdit = QLineEdit(item.text())
+                    grid_layout.addWidget(label, 0, 0)
+                    grid_layout.addWidget(lineEdit, 0, 1)
+                    lineEdits.append(lineEdit)
+                elif column_name == "Type":
+                    group_type = QGroupBox("Type")
+                    group_type_layout = QHBoxLayout()
+                    if item.text() == "Laboratory":
+                        radio_lab.setChecked(True)
+                    else:
+                        radio_lec.setChecked(True)
+                    group_type_layout.addWidget(radio_lab)
+                    group_type_layout.addWidget(radio_lec)
+                    group_type.setLayout(group_type_layout)
+                    layout.addWidget(group_type)
+            else:
+                lineEdit = QLineEdit("")
                 grid_layout.addWidget(label, col, 0)
                 grid_layout.addWidget(lineEdit, col, 1)
                 lineEdits.append(lineEdit)
+        layout.addLayout(grid_layout)
 
-            layout.addLayout(grid_layout)
+        button_layout = QHBoxLayout()
+        btnFinish = QPushButton("Finish")
+        btnFinish.clicked.connect(lambda: self.updateData(table, row, lineEdits, [radio_lab.isChecked(), radio_lec.isChecked()]))
+        button_layout.addWidget(btnFinish)
+        btnCancel = QPushButton("Cancel")
+        btnCancel.clicked.connect(edit_dialog.close)
+        button_layout.addWidget(btnCancel)
+        layout.addLayout(button_layout)
 
-            if tab_title == "Subjects":
-                group_type = QGroupBox("Type")
-                group_type_layout = QHBoxLayout()
-                radioLec = QRadioButton("Lecture")
-                radioLab = QRadioButton("Laboratory")
-                radioBoth = QRadioButton("Both")
-
-                subject_type = table.item(row, 2).text()
-                if subject_type == "Lecture":
-                    radioLec.setChecked(True)
-                elif subject_type == "Laboratory":
-                    radioLab.setChecked(True)
-                else:
-                    radioBoth.setChecked(True)
-
-                group_type_layout.addWidget(radioLec)
-                group_type_layout.addWidget(radioLab)
-                group_type_layout.addWidget(radioBoth)
-                group_type.setLayout(group_type_layout)
-                layout.addWidget(group_type)
-
-            button_layout = QHBoxLayout()
-            btnFinish = QPushButton("Finish")
-            if tab_title == "Subjects":
-                btnFinish.clicked.connect(lambda: self.updateData(table, row, lineEdits, [radioLec.isChecked(), radioLab.isChecked(), radioBoth.isChecked()]))
-            else:
-                btnFinish.clicked.connect(lambda: self.updateData(table, row, lineEdits))
-            button_layout.addWidget(btnFinish)
-            btnCancel = QPushButton("Cancel")
-            btnCancel.clicked.connect(edit_dialog.close)
-            button_layout.addWidget(btnCancel)
-            layout.addLayout(button_layout)
-
-            edit_dialog.setLayout(layout)
-            edit_dialog.exec_()
+        edit_dialog.setLayout(layout)
+        edit_dialog.exec_()
 
     def updateData(self, table, row, lineEdits, radio_states):
         for col, lineEdit in enumerate(lineEdits):
-            table.setItem(row, col + 1, QTableWidgetItem(lineEdit.text()))
-        subject_type = "Lecture" if radio_states[0] else "Laboratory" if radio_states[1] else "Both"
-        table.setItem(row, 2, QTableWidgetItem(subject_type))
+            table.setItem(row, col, QTableWidgetItem(lineEdit.text()))
+        if radio_states:
+            subject_type = "Lecture" if radio_states[0] else "Laboratory" if radio_states[1] else "Both"
+            table.setItem(row, 2, QTableWidgetItem(subject_type))
         self.sender().parent().close()
 
     def generateButtonClicked(self):
