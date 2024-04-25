@@ -70,7 +70,7 @@ class TimeTableGenerator(QMainWindow):
         self.setCentralWidget(self.tabs)
 
         tab_titles = ["Instructors", "Classes", "Labs", "Subjects", "Output Generator"]
-        tab_columns = [["Name", "Hours", "Operation"], ["Name","Type", "Operation"], ["Name", "Operation"], ["Code", "Name","Class",  "Instructors", "Operation"], []]
+        tab_columns = [["Name", "Hours", "Operation"], ["Name","Type", "Operation"], ["Name", "Operation"], ["Code", "Name","Class", "Instructors", "Operation"], []]
 
         for title, columns in zip(tab_titles, tab_columns):
             self.createTab(title, columns)
@@ -87,7 +87,7 @@ class TimeTableGenerator(QMainWindow):
 
         if title != "Output Generator":
             add_button_layout = QHBoxLayout()
-            add_button = QPushButton(f"Add {title[:-1]}", self)
+            add_button = QPushButton(f"Add {title}", self)
             if title == "Instructors":
                 add_button.clicked.connect(self.addInstructorsButtonClicked)
             elif title == "Classes":
@@ -153,13 +153,107 @@ class TimeTableGenerator(QMainWindow):
         add_dialog.exec_()
 
     def addClassesButtonClicked(self):
-        pass
+        add_dialog = QDialog(self)
+        add_dialog.setFixedSize(self.new_window_size)
+        add_dialog.setWindowTitle("Add Class")
+
+        layout = QVBoxLayout()
+        grid_layout = QGridLayout()
+        self.class_name_lineEdit = QLineEdit()
+        self.radio_lab = QRadioButton("Laboratory")
+        self.radio_lec = QRadioButton("Lecture")
+
+        grid_layout.addWidget(QLabel("Name:"), 0, 0)
+        grid_layout.addWidget(self.class_name_lineEdit, 0, 1)
+        grid_layout.addWidget(QLabel("Type:"), 1, 0)
+        grid_layout.addWidget(self.radio_lab, 1, 1)
+        grid_layout.addWidget(self.radio_lec, 1, 2)
+
+        layout.addLayout(grid_layout)
+
+        button_layout = QHBoxLayout()
+        btnFinish = QPushButton("Finish")
+        btnFinish.clicked.connect(lambda: self.ProcessData("Classes"))
+        button_layout.addWidget(btnFinish)
+        btnCancel = QPushButton("Cancel")
+        btnCancel.clicked.connect(add_dialog.close)
+        button_layout.addWidget(btnCancel)
+        layout.addLayout(button_layout)
+
+        add_dialog.setLayout(layout)
+        add_dialog.exec_()
 
     def addLabsButtonClicked(self):
-        pass
+        add_dialog = QDialog(self)
+        add_dialog.setFixedSize(self.new_window_size)
+        add_dialog.setWindowTitle("Add Lab")
+
+        layout = QVBoxLayout()
+        grid_layout = QGridLayout()
+        self.lab_name_lineEdit = QLineEdit()
+
+        grid_layout.addWidget(QLabel("Name:"), 0, 0)
+        grid_layout.addWidget(self.lab_name_lineEdit, 0, 1)
+
+        layout.addLayout(grid_layout)
+
+        button_layout = QHBoxLayout()
+        btnFinish = QPushButton("Finish")
+        btnFinish.clicked.connect(lambda: self.ProcessData("Labs"))
+        button_layout.addWidget(btnFinish)
+        btnCancel = QPushButton("Cancel")
+        btnCancel.clicked.connect(add_dialog.close)
+        button_layout.addWidget(btnCancel)
+        layout.addLayout(button_layout)
+
+        add_dialog.setLayout(layout)
+        add_dialog.exec_()
 
     def addSubjectsButtonClicked(self):
-        pass
+        add_dialog = QDialog(self)
+        add_dialog.setFixedSize(self.new_window_size)
+        add_dialog.setWindowTitle("Add Subject")
+
+        layout = QVBoxLayout()
+        grid_layout = QGridLayout()
+        self.lineEditName = QLineEdit()
+        self.lineEditHours = QLineEdit()
+        self.lineEditCode = QLineEdit()
+        self.lineEditDescription = QLineEdit()
+        self.radioLec = QRadioButton("Lecture")
+        self.radioLab = QRadioButton("Laboratory")
+        self.radioBoth = QRadioButton("Both")
+
+        grid_layout.addWidget(QLabel("Name:"), 0, 0)
+        grid_layout.addWidget(self.lineEditName, 0, 1)
+        grid_layout.addWidget(QLabel("Hours:"), 1, 0)
+        grid_layout.addWidget(self.lineEditHours, 1, 1)
+        grid_layout.addWidget(QLabel("Code:"), 2, 0)
+        grid_layout.addWidget(self.lineEditCode, 2, 1)
+        grid_layout.addWidget(QLabel("Description:"), 3, 0)
+        grid_layout.addWidget(self.lineEditDescription, 3, 1)
+
+        layout.addLayout(grid_layout)
+
+        group_type = QGroupBox("Type")
+        group_type_layout = QHBoxLayout()
+        group_type_layout.addWidget(self.radioLec)
+        group_type_layout.addWidget(self.radioLab)
+        group_type_layout.addWidget(self.radioBoth)
+        group_type.setLayout(group_type_layout)
+        layout.addWidget(group_type)
+
+        button_layout = QHBoxLayout()
+        btnFinish = QPushButton("Finish")
+        btnFinish.clicked.connect(lambda: self.ProcessData("Subjects"))
+        button_layout.addWidget(btnFinish)
+        btnCancel = QPushButton("Cancel")
+        btnCancel.clicked.connect(add_dialog.close)
+        button_layout.addWidget(btnCancel)
+        layout.addLayout(button_layout)
+
+        add_dialog.setLayout(layout)
+        add_dialog.exec_()
 
     def importButtonClicked(self):
         filename, _ = QFileDialog.getOpenFileName(self, "Import CSV", "", "CSV Files (*.csv)")
