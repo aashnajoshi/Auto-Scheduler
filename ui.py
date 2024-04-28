@@ -85,36 +85,34 @@ class TimeTableGenerator(QMainWindow):
         table.setHorizontalHeaderLabels(columns)
         layout.addWidget(table)
 
-        if title != "Output Generator":
-            add_button_layout = QHBoxLayout()
-            add_button = QPushButton(f"Add {title}", self)
-            if title == "Instructors":
-                add_button.clicked.connect(self.addInstructorsButtonClicked)
-            elif title == "Classes":
-                add_button.clicked.connect(self.addClassesButtonClicked)
-            elif title == "Labs":
-                add_button.clicked.connect(self.addLabsButtonClicked)
-            elif title == "Subjects":
-                add_button.clicked.connect(self.addSubjectsButtonClicked)
-            if title != "Subjects":
-                import_button = QPushButton("Import from CSV", self)
-                add_button_layout.addWidget(import_button)
-                import_button.clicked.connect(self.importButtonClicked)
+        add_button_layout = QHBoxLayout()
 
-            add_button_widget = QWidget()
-            add_button_widget.setLayout(add_button_layout)
-            layout.addWidget(add_button_widget)
+        add_button = QPushButton(f"Add {title}", self)
+        import_button = QPushButton("Import from CSV", self)
+        import_button.clicked.connect(self.importButtonClicked)
 
-        else:
-            scenario_buttons_layout = QHBoxLayout()
-
+        if title == "Instructors":
+            add_button.clicked.connect(self.addInstructorsButtonClicked)
+        elif title == "Classes":
+            add_button.clicked.connect(self.addClassesButtonClicked)
+        elif title == "Labs":
+            add_button.clicked.connect(self.addLabsButtonClicked)
+        elif title == "Subjects":
+            add_button.clicked.connect(self.addSubjectsButtonClicked)
+            import_button.hide()
+        elif title == "Output Generator":
             generate_button = QPushButton("Generate", self)
-            scenario_buttons_layout.addWidget(generate_button)
             generate_button.clicked.connect(self.generateButtonClicked)
+            add_button_layout.addWidget(generate_button)
+            add_button.hide()
+            import_button.hide()
 
-            scenario_buttons_widget = QWidget()
-            scenario_buttons_widget.setLayout(scenario_buttons_layout)
-            layout.addWidget(scenario_buttons_widget)
+        add_button_layout.addWidget(add_button)
+        add_button_layout.addWidget(import_button)
+
+        add_button_widget = QWidget()
+        add_button_widget.setLayout(add_button_layout)
+        layout.addWidget(add_button_widget)
 
         tab.setLayout(layout)
         if title == "Subjects":
