@@ -350,22 +350,25 @@ class TimeTableGenerator(QMainWindow):
         layout = QVBoxLayout()
         grid_layout = QGridLayout()
         lineEdits = []
-        radio_lab = QRadioButton("Laboratory")
-        radio_lec = QRadioButton("Lecture")
 
         column_names = [table.horizontalHeaderItem(col).text() for col in range(table.columnCount())]
+        radio_lab = QRadioButton("Laboratory")
+        radio_lec = QRadioButton("Lecture")
+        
         for col, column_name in enumerate(column_names):
             if column_name == "Operation":
                 continue
             label = QLabel(column_name + ":")
             item = table.item(row, col)
             if item is not None:
-                if column_name == "Name":
-                    lineEdit = QLineEdit(item.text())
-                    grid_layout.addWidget(label, 0, 0)
-                    grid_layout.addWidget(lineEdit, 0, 1)
-                    lineEdits.append(lineEdit)
-                elif column_name == "Type":
+                lineEdit = QLineEdit(item.text())
+                grid_layout.addWidget(label, col, 0)
+                grid_layout.addWidget(lineEdit, col, 1)
+                lineEdits.append(lineEdit)
+                if column_name == "Hours" and tab_title == "Instructors":
+                    grid_layout.addWidget(label, 1, 0)  # Add label for Hours
+                    grid_layout.addWidget(lineEdit, 1, 1)  # Add QLineEdit for editing Hours
+                elif column_name == "Type" and tab_title == "Classes":
                     group_type = QGroupBox("Type")
                     group_type_layout = QHBoxLayout()
                     if item.text() == "Laboratory":
@@ -376,11 +379,6 @@ class TimeTableGenerator(QMainWindow):
                     group_type_layout.addWidget(radio_lec)
                     group_type.setLayout(group_type_layout)
                     layout.addWidget(group_type)
-            else:
-                lineEdit = QLineEdit("")
-                grid_layout.addWidget(label, col, 0)
-                grid_layout.addWidget(lineEdit, col, 1)
-                lineEdits.append(lineEdit)
         layout.addLayout(grid_layout)
 
         button_layout = QHBoxLayout()
@@ -395,11 +393,11 @@ class TimeTableGenerator(QMainWindow):
         edit_dialog.setLayout(layout)
         edit_dialog.exec_()
 
-    def updateData(self, table, row, lineEdits, radio_states):
+    def updateData(self, table, row, lineEdits, radio_states=None):
         for col, lineEdit in enumerate(lineEdits):
             table.setItem(row, col, QTableWidgetItem(lineEdit.text()))
-        if radio_states:
-            subject_type = "Lecture" if radio_states[0] else "Laboratory" if radio_states[1] else "Both"
+        if radio_states is not None:
+            subject_type = "Lecture" if radio_states[1] else "Laboratory" if radio_states[0] else "Both"
             table.setItem(row, 2, QTableWidgetItem(subject_type))
         self.sender().parent().close()
 
