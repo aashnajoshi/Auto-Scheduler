@@ -12,6 +12,9 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
 
+tab_titles = ["Instructors", "Classes", "Labs", "Subjects", "Output Generator"]
+tab_columns = [["Name", "Hours", "Operation"], ["Name","Type", "Operation"], ["Name", "Operation"], ["Code", "Name","Class", "Instructors", "Operation"], []]
+
 class TimeTableGenerator(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -38,9 +41,6 @@ class TimeTableGenerator(QMainWindow):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
-        tab_titles = ["Instructors", "Classes", "Labs", "Subjects", "Output Generator"]
-        tab_columns = [["Name", "Hours", "Operation"], ["Name","Type", "Operation"], ["Name", "Operation"], ["Code", "Name","Class", "Instructors", "Operation"], []]
-
         for title, columns in zip(tab_titles, tab_columns):
             self.createTab(title, columns)
 
@@ -55,7 +55,6 @@ class TimeTableGenerator(QMainWindow):
         layout.addWidget(table)
 
         add_button_layout = QHBoxLayout()
-
         add_button = QPushButton(f"Add {title}", self)
         import_button = QPushButton("Import from CSV", self)
         import_button.clicked.connect(self.importButtonClicked)
@@ -82,10 +81,7 @@ class TimeTableGenerator(QMainWindow):
         add_button_widget = QWidget()
         add_button_widget.setLayout(add_button_layout)
         layout.addWidget(add_button_widget)
-
         tab.setLayout(layout)
-        if title == "Subjects":
-            table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
     def addInstructorsButtonClicked(self):
         add_dialog = QDialog(self)
@@ -134,7 +130,6 @@ class TimeTableGenerator(QMainWindow):
         group_type_layout.addWidget(self.radio_lec)
         group_type.setLayout(group_type_layout)
         layout.addWidget(group_type)
-
 
         button_layout = QHBoxLayout()
         btnFinish = QPushButton("Finish")
@@ -337,8 +332,8 @@ class TimeTableGenerator(QMainWindow):
                 grid_layout.addWidget(lineEdit, col, 1)
                 lineEdits.append(lineEdit)
                 if column_name == "Hours" and tab_title == "Instructors":
-                    grid_layout.addWidget(label, 1, 0)  # Add label for Hours
-                    grid_layout.addWidget(lineEdit, 1, 1)  # Add QLineEdit for editing Hours
+                    grid_layout.addWidget(label, 1, 0)
+                    grid_layout.addWidget(lineEdit, 1, 1)
                 elif column_name == "Type" and tab_title == "Classes":
                     group_type = QGroupBox("Type")
                     group_type_layout = QHBoxLayout()
@@ -380,13 +375,13 @@ class TimeTableGenerator(QMainWindow):
 
     def create_availability_table(self, days_of_week, hour_labels):
         availability_table = QTableWidget()
-        availability_table.setColumnCount(len(days_of_week))
-        availability_table.setRowCount(len(hour_labels))
-        availability_table.setHorizontalHeaderLabels(days_of_week)
-        availability_table.setVerticalHeaderLabels(hour_labels)
+        availability_table.setColumnCount(len(hour_labels))
+        availability_table.setRowCount(len(days_of_week))
+        availability_table.setHorizontalHeaderLabels(hour_labels)
+        availability_table.setVerticalHeaderLabels(days_of_week)
 
-        for row in range(len(hour_labels)):
-            for col in range(len(days_of_week)):
+        for row in range(len(days_of_week)):
+            for col in range(len(hour_labels)):
                 item = QTableWidgetItem("Available")
                 item.setBackground(QtGui.QColor(0, 255, 0))
                 availability_table.setItem(row, col, item)
@@ -404,9 +399,6 @@ class TimeTableGenerator(QMainWindow):
             current_item.setBackground(QtGui.QColor(0, 255, 0))
             current_item.setText("Available")
         self.availability_table.clearSelection()
-
-    def cleanupSectionDialog(self):
-        self.availability_table.cellClicked.disconnect()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
