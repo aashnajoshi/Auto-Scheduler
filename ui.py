@@ -26,7 +26,6 @@ class TimeTableGenerator(QMainWindow):
         self.setFixedSize(716, 553)
         self.setWindowTitle("Time Table Generator")
         self.setWindowIcon(QIcon('icon.png'))
-        self.createMenuBar()
         self.createWidgets()
 
     def calculateNewWindowSize(self):
@@ -34,40 +33,6 @@ class TimeTableGenerator(QMainWindow):
         new_window_width = main_window_size.width() * 0.8
         new_window_height = main_window_size.height() * 0.8
         return QtCore.QSize(new_window_width, new_window_height)
-
-    def createMenuBar(self):
-        menubar = self.menuBar()
-
-        file_menu = menubar.addMenu("File")
-        self.createMenuItem(file_menu, "New", self.newFile)
-        self.createMenuItem(file_menu, "Save As", self.saveAs)
-        self.createMenuItem(file_menu, "Exit", self.close)
-
-        help_menu = menubar.addMenu("Help")
-        self.createMenuItem(help_menu, "Instructions", self.instructions)
-        self.createMenuItem(help_menu, "About", self.about)
-
-    def createMenuItem(self, menu, title, function):
-        action = QAction(title, self)
-        action.triggered.connect(function)
-        menu.addAction(action)
-
-    def newFile(self):
-        print("New File")
-
-    def saveAs(self):
-        filename, _ = QFileDialog.getSaveFileName(self, "Save As", "", "All Files (*);;Text Files (*.txt)")
-        if filename:
-            print("Saving as", filename)
-
-    def settings(self):
-        print("Settings")
-
-    def instructions(self):
-        print("Instructions")
-
-    def about(self):
-        print("About")
 
     def createWidgets(self):
         self.tabs = QTabWidget()
