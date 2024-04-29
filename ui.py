@@ -35,7 +35,7 @@ class TimeTableGenerator(QMainWindow):
         main_window_size = self.size()
         new_window_width = main_window_size.width() * 0.8
         new_window_height = main_window_size.height() * 0.8
-        return QtCore.QSize(new_window_width, new_window_height)
+        return QtCore.QSize(int(new_window_width), int(new_window_height))
 
     def createWidgets(self):
         self.tabs = QTabWidget()
