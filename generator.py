@@ -1,31 +1,23 @@
 import random
-classes ={'aiml':[['sub1','sub2','sub3','sub4'],['lab_sub3','lab_sub2']],
-          'cse':[['sub1','sub2','sub5','sub4'],['lab_sub2','lab_sub5']],
-          'ece':[['sub1','sub5','sub6'],['lab_sub0']]
-        }
 
-teachers = {'teacher1':[['sub1','aiml',3],['sub1','cse',3],['sub5','ece',3]],
-          'teacher2':[['sub2','aiml',3],['sub2','cse',2],['sub1','ece',3],['lab_sub2','aiml',1],['lab_sub2','cse',1]],
-          'teacher3':[['sub3','aiml',2],['lab_sub3','aiml',1],['lab_sub0','ece',1]],
-          'teacher4':[['sub4','aiml',4],['sub4','cse',2]],
-          'teacher5':[['sub5','cse',4,],['sub6','ece',3],['lab_sub5','cse',1]]  
-        }
-def basic_structure():
-    tt=[["","","","","","",""],["","","","","","",""],["","","","","","",""],["","","","","","",""],["","","","","","",""]]
-    return tt
-ctt={'aiml':[x for x in basic_structure()],'cse':[x for x in basic_structure()],'ece':[x for x in basic_structure()]}
-ttt={'teacher1':[x for x in basic_structure()],'teacher2':[x for x in basic_structure()],'teacher3':[x for x in basic_structure()],'teacher4':[x for x in basic_structure()],
-     'teacher5':[x for x in basic_structure()]}
+classes ={'aiml':[['sub1','sub2','sub3','sub4'],['lab_sub3','lab_sub2']], 'cse':[['sub1','sub2','sub5','sub4'],['lab_sub2','lab_sub5']], 'ece':[['sub1','sub5','sub6'],['lab_sub0']]}
+
+teachers = {'teacher1':[['sub1','aiml',3],['sub1','cse',3],['sub5','ece',3]], 'teacher2':[['sub2','aiml',3],['sub2','cse',2],['sub1','ece',3],['lab_sub2','aiml',1],['lab_sub2','cse',1]], 'teacher3':[['sub3','aiml',2],['lab_sub3','aiml',1],['lab_sub0','ece',1]], 'teacher4':[['sub4','aiml',4],['sub4','cse',2]], 'teacher5':[['sub5','cse',4,],['sub6','ece',3],['lab_sub5','cse',1]]}
 
 labs =['lab1','lab2','lab3','lab4']
+
+tt=[["","","","","","",""],["","","","","","",""],["","","","","","",""],["","","","","","",""],["","","","","","",""]]
+
 class_tt={'aiml':[],'cse':[],'ece':[]}
 teachers_tt={'teacher1':[],'teacher2':[],'teacher3':[],'teacher4':[],'teacher5':[]}
 labs_tt={'lab1':[],'lab2':[],'lab3':[],'lab4':[]}
 
+ctt={'aiml':[x for x in tt],'cse':[x for x in tt],'ece':[x for x in tt]}
+ttt={'teacher1':[x for x in tt],'teacher2':[x for x in tt],'teacher3':[x for x in tt],'teacher4':[x for x in tt], 'teacher5':[x for x in tt]}
+
 # Time Table Generator 
 def T_T_G(classes_list):
     for clas in classes_list:
-        # teachers_of_class = get_teachers(clas)
         print(clas)
         assign_labs(clas)
         assign_lectures(clas)
@@ -43,10 +35,9 @@ def get_teachers(clas):
 
 # Scheduling labs for a class
 def assign_labs(cls):
-    # print("labs alloted "+cls)
     lab_sub= get_sub(cls,1)
     lab_and_teachers =get_data(cls,1)
-    lec_for_labs=[(1,5,6),(1,3,4),(2,3,4),(2,6,7),(4,5,6),(4,3,4),(5,3,4),(5,6,7)]#(day,lec1,lec2)
+    lec_for_labs=[(1,5,6),(1,3,4),(2,3,4),(2,6,7),(4,5,6),(4,3,4),(5,3,4),(5,6,7)] #(day,lec1,lec2)
     for selected_sub in lab_sub:
         lecs=[x for x in lec_for_labs]
         num_of_lec=len(lec_for_labs)
@@ -122,35 +113,35 @@ def update_tt(tt,key,lec):
         class_tt[key].append(lec)
 
 def assign_lectures(cls):
-  
-  cls_sub= get_sub(cls,0)   # get subjects data of class
+  cls_sub= get_sub(cls,0)   #get subjects data of class
   sub_data=get_data(cls,0)
-  days=[1,2,3,4,5]# make list of weekdays
+  days=[1,2,3,4,5] #make list of weekdays
   sub_left=get_sub(cls,0) #prepare list of subjects to be scheduled
-  while(len(sub_left)):# while(sum of lectures needed in subjects dat )
-    day=random.choice(days)#     choose any day from weekdays 
-    for lec in range(1,8):#         for each lecture
-        if( (day,lec) not in class_tt[cls]):#             if lecure free:
-            subjects= [i for i in sub_left]#                 make copy of subject list
+  while(len(sub_left)): #while(sum of lectures needed in subjects dat )
+    day=random.choice(days) #choose any day from weekdays 
+    for lec in range(1,8): #for each lecture
+        if( (day,lec) not in class_tt[cls]): #if lecure free:
+            subjects= [i for i in sub_left] #make copy of subject list
             num=len(subjects)
-            for n in range(num):#                 for range(num of subjects):
-                subject=random.choice(subjects)#                     select random subject from copy list
-                if(is_teacher_free(sub_data[subject][0],(day,lec),0)):# if (teacher available for lecture):
+            for n in range(num): #for range(num of subjects):
+                subject=random.choice(subjects) #select random subject from copy list
+                if(is_teacher_free(sub_data[subject][0],(day,lec),0)): #if (teacher available for lecture):
                     ttt[sub_data[subject][0]][day-1][lec-1]=(cls,subject)
-                    update_tt('teachers_tt',sub_data[subject][0],(day,lec))#   update teacher tt 
+                    update_tt('teachers_tt',sub_data[subject][0],(day,lec)) #update teacher tt 
                     ctt[cls][day-1][lec-1]=(subject,sub_data[subject][0])
-                    update_tt('classes_tt',cls,(day,lec))#                         update clas tt
-                    sub_data[subject][1]-=1#                         dec num of lec for subject in subject data 
-                    sub_left.remove(subject)#                         remove subject from list of subjects for today
+                    update_tt('classes_tt',cls,(day,lec)) #update clas tt
+                    sub_data[subject][1]-=1 #dec num of lec for subject in subject data 
+                    sub_left.remove(subject) #remove subject from list of subjects for today
                     print((day,lec)," ",subject," ",sub_data[subject][0]," ")
-                    break#                         break
-                else:#                     else:
-                    subjects.remove(subject)#                         remove subject from copy
+                    break
+                else:
+                    subjects.remove(subject) #remove subject from copy
     sub_left=[s for s in cls_sub if sub_data[s][1]>0] #update list of subjects left
-    days.remove(day)#     remove day from weekdays
-    if( len(days)==0 and len(sub_left)!=0): # insufficient space
+    days.remove(day) #emove day from weekdays
+    if( len(days)==0 and len(sub_left)!=0): #insufficient space
         print("Exhausted !!!!!! no space left with \n",sub_left)
         break
+
 # Calling the time table genrator with list of all class names
 T_T_G(classes.keys())
 for cls in classes.keys():
@@ -161,9 +152,3 @@ for cls in teachers.keys():
     print(cls)
     for r in ttt[cls]:
         print(r)
-# for cls in classes.keys():
-#     print(r for r in ctt[cls])
-# for teacher in teachers.keys():
-#     for r in ttt[teacher]:
-#         print(r)
-# print(ttt['teacher1'])
