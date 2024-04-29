@@ -17,6 +17,10 @@ class TimeTableGenerator(QMainWindow):
         super().__init__()
         self.initUI()
         self.new_window_size = self.calculateNewWindowSize()
+        self.instructors_data = []
+        self.classes_data = []
+        self.labs_data = []
+        self.subjects_data = []
 
     def initUI(self):
         self.setFixedSize(716, 553)
@@ -268,6 +272,7 @@ class TimeTableGenerator(QMainWindow):
         if current_tab_title == "Instructors":
             name = self.lineEditName.text()
             hours = self.lineEditHours.text()
+            self.instructors_data.append({"Name": name, "Hours": hours})
 
             row_position = current_table.rowCount()
             current_table.insertRow(row_position)
@@ -285,6 +290,7 @@ class TimeTableGenerator(QMainWindow):
         elif current_tab_title == "Classes":
             name = self.class_name_lineEdit.text()
             class_type = "Laboratory" if self.radio_lab.isChecked() else "Lecture"
+            self.classes_data.append({"Name": name, "Type": class_type})
 
             row_position = current_table.rowCount()
             current_table.insertRow(row_position)
@@ -301,6 +307,7 @@ class TimeTableGenerator(QMainWindow):
         
         elif current_tab_title == "Labs":
             name = self.lab_name_lineEdit.text()
+            self.labs_data.append({"Name": name})
 
             row_position = current_table.rowCount()
             current_table.insertRow(row_position)
@@ -319,6 +326,7 @@ class TimeTableGenerator(QMainWindow):
             name = self.lineEditName.text()
             class_name = self.lineEditClass.text()
             instructor = self.lineEditInstructor.text()
+            self.subjects_data.append({"Code": code, "Name": name, "Class": class_name, "Instructor": instructor})
 
             row_position = current_table.rowCount()
             current_table.insertRow(row_position)
@@ -335,8 +343,6 @@ class TimeTableGenerator(QMainWindow):
             delete_button.clicked.connect(lambda: self.deleteEntry(current_table, row_position, current_tab_title))
             current_table.setCellWidget(row_position, 5, delete_button)
 
-        elif current_tab_title == "Output Generator":
-            print("Output Generator tab selected")
         else:
             print("Unknown type:", current_tab_title)
 
@@ -402,7 +408,10 @@ class TimeTableGenerator(QMainWindow):
         self.sender().parent().close()
 
     def generateButtonClicked(self):
-        print("Generate Button Clicked")
+        print("Instructors Data:", self.instructors_data)
+        print("Classes Data:", self.classes_data)
+        print("Labs Data:", self.labs_data)
+        print("Subjects Data:", self.subjects_data)
 
     def create_availability_table(self, days_of_week, hour_labels):
         availability_table = QTableWidget()
