@@ -1,17 +1,13 @@
 import random
 
 classes ={'aiml':[['sub1','sub2','sub3','sub4'],['lab_sub3','lab_sub2']], 'cse':[['sub1','sub2','sub5','sub4'],['lab_sub2','lab_sub5']], 'ece':[['sub1','sub5','sub6'],['lab_sub0']]}
-
 teachers = {'teacher1':[['sub1','aiml',3],['sub1','cse',3],['sub5','ece',3]], 'teacher2':[['sub2','aiml',3],['sub2','cse',2],['sub1','ece',3],['lab_sub2','aiml',1],['lab_sub2','cse',1]], 'teacher3':[['sub3','aiml',2],['lab_sub3','aiml',1],['lab_sub0','ece',1]], 'teacher4':[['sub4','aiml',4],['sub4','cse',2]], 'teacher5':[['sub5','cse',4,],['sub6','ece',3],['lab_sub5','cse',1]]}
-
 labs =['lab1','lab2','lab3','lab4']
 
 tt=[["","","","","","",""],["","","","","","",""],["","","","","","",""],["","","","","","",""],["","","","","","",""]]
-
 class_tt={'aiml':[],'cse':[],'ece':[]}
 teachers_tt={'teacher1':[],'teacher2':[],'teacher3':[],'teacher4':[],'teacher5':[]}
 labs_tt={'lab1':[],'lab2':[],'lab3':[],'lab4':[]}
-
 ctt={'aiml':[x for x in tt],'cse':[x for x in tt],'ece':[x for x in tt]}
 ttt={'teacher1':[x for x in tt],'teacher2':[x for x in tt],'teacher3':[x for x in tt],'teacher4':[x for x in tt], 'teacher5':[x for x in tt]}
 
