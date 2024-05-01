@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui
 import sys
+import os
 
 # To open Designer: qt5-tools designer
 # To convert .ui file to .py file: pyuic5 -x filename.ui -o filename.py
@@ -8,8 +9,8 @@ import sys
 days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
 
-tab_titles = ["Teachers", "Classes", "Labs", "relations", "Output Generator"]
-tab_columns = [["Name", "Operation"], ["Name","subjects","lab subjects", "Operation"], ["Name", "Operation"],["subject", "class", "teacher", "lectures", "Operation"], []]
+tab_titles = ["Teachers", "Classes", "Labs", "Relations", "Output Generator"]
+tab_columns = [["Name", "Operation"], ["Name","Subjects","Lab Subjects", "Operation"], ["Name", "Operation"],["Subject", "Class", "Teacher", "Lectures", "Operation"], []]
 
 class TimeTableGenerator(QMainWindow):
     def __init__(self):
@@ -140,6 +141,7 @@ class TimeTableGenerator(QMainWindow):
         print(f"Removed item: {removed_item}")
 
     def generateButtonClicked(self):
+        os.system('cls')
         for title, data_list in self.data.items():
             print(f"{title} Data:", data_list)
 
