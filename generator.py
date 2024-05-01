@@ -1,7 +1,13 @@
 import random
 
-classes ={'aiml':[['sub1','sub2','sub3','sub4'],['lab_sub3','lab_sub2']], 'cse':[['sub1','sub2','sub5','sub4'],['lab_sub2','lab_sub5']], 'ece':[['sub1','sub5','sub6'],['lab_sub0']]}
-teachers = {'teacher1':[['sub1','aiml',3],['sub1','cse',3],['sub5','ece',3]], 'teacher2':[['sub2','aiml',3],['sub2','cse',2],['sub1','ece',3],['lab_sub2','aiml',1],['lab_sub2','cse',1]],'teacher3':[['sub3','aiml',2],['lab_sub3','aiml',1],['lab_sub0','ece',1]],'teacher4':[['sub4','aiml',4],['sub4','cse',2]], 'teacher5':[['sub5','cse',4,],['sub6','ece',3],['lab_sub5','cse',1]]}
+classes ={'aiml':[['sub1','sub2','sub3','sub4'],['lab_sub3','lab_sub2']], 
+         'cse':[['sub1','sub2','sub5','sub4'],['lab_sub2','lab_sub5']], 
+         'ece':[['sub1','sub5','sub6'],['lab_sub0']]}
+teachers = {'teacher1':[['sub1','aiml',3],['sub1','cse',3],['sub5','ece',3]], 
+            'teacher2':[['sub2','aiml',3],['sub2','cse',2],['sub1','ece',3],['lab_sub2','aiml',1],['lab_sub2','cse',1]],
+            'teacher3':[['sub3','aiml',2],['lab_sub3','aiml',1],['lab_sub0','ece',1]],
+            'teacher4':[['sub4','aiml',4],['sub4','cse',2]], 
+            'teacher5':[['sub5','cse',4,],['sub6','ece',3],['lab_sub5','cse',1]]}
 labs =['lab1','lab2','lab3','lab4']
 
 class_tt={'aiml':[],
@@ -16,10 +22,11 @@ labs_tt={'lab1':[],
          'lab2':[],
          'lab3':[],
          'lab4':[]}
-         
+
 def basic_structure():
     tt=[["","","","","","",""],["","","","","","",""],["","","","","","",""],["","","","","","",""],["","","","","","",""]]
     return tt
+    
 ctt={'aiml':[x for x in basic_structure()],
      'cse':[x for x in basic_structure()],
      'ece':[x for x in basic_structure()]}
