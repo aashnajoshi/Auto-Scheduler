@@ -8,8 +8,8 @@ import sys
 days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
 
-tab_titles = ["Instructors", "Classes", "Labs", "Subjects", "Output Generator"]
-tab_columns = [["Name", "Hours", "Operation"], ["Name", "Operation"], ["Name", "Operation"],["Code", "Name", "Class", "Instructors", "Operation"], []]
+tab_titles = ["Teachers", "Classes", "Labs", "relations", "Output Generator"]
+tab_columns = [["Name", "Operation"], ["Name","subjects","lab subjects", "Operation"], ["Name", "Operation"],["subject", "class", "teacher", "lectures", "Operation"], []]
 
 class TimeTableGenerator(QMainWindow):
     def __init__(self):
