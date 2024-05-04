@@ -10,7 +10,7 @@ days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturda
 hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
 
 tab_titles = ["Teachers", "Classes", "Labs", "Relations", "Output Generator"]
-tab_columns = [["Name", "Operation"], ["Name","Subjects","Lab Subjects", "Operation"], ["Name", "Operation"],["Subject", "Class", "Teacher", "Lectures", "Operation"], []]
+tab_columns = [["Name", "Operation"], ["Name","Subjects","Lab Subjects", "Operation"], ["Name", "Operation"],["Subject", "Class", "Name", "Lectures", "Operation"], []]
 
 class TimeTableGenerator(QMainWindow):
     def __init__(self):
@@ -138,12 +138,11 @@ class TimeTableGenerator(QMainWindow):
         current_table = self.tabs.widget(current_tab_index).findChild(QTableWidget)
         current_table.removeRow(row_position)
         removed_item = self.data[current_tab_title].pop(row_position)
-        print(f"Removed item: {removed_item}")
-
     def generateButtonClicked(self):
         os.system('cls')
-        for title, data_list in self.data.items():
-            print(f"{title} Data:", data_list)
+        # for title, data_list in self.data.items():
+        #     print(f"{title} Data:", data_list)
+        print(self.data)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
