@@ -2,17 +2,16 @@ import random
 
 classes={}
 teachers={}
+labs=['lab1','lab2','lab3','lab4','lab5']
+
 class_tt={}
 teachers_tt={}
 labs_tt={}
+
 ctt={}
 ttt={}
-labs=['lab1','lab2','lab3','lab4','lab5']
-def welcome():
-    print("hello")
-    
+
 def initialize(data):
-    # labs = [x['Name'] for x in data['Labs']]
     for i in data['Classes']:
         classes[i['Name']]=[i['Subjects'].split(','),i['Lab Subjects'].split(',')]
         class_tt[i['Name']]=[]
