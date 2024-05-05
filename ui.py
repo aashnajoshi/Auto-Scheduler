@@ -3,9 +3,11 @@ from PyQt5 import QtCore, QtGui
 import sys
 import os
 from generator import *
-os.system('cls')
+
 # To open Designer: qt5-tools designer
 # To convert .ui file to .py file: pyuic5 -x filename.ui -o filename.py
+
+os.system('cls')
 
 days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
@@ -16,27 +18,15 @@ tab_columns = [["Name", "Operation"], ["Name","Subjects","Lab Subjects", "Operat
 class TimeTableGenerator(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.initUI()
         self.new_window_size = self.calculateNewWindowSize()
         self.data={'Teachers': [{'Name': 'teacher1'}, {'Name': 'teacher2'}, {'Name': 'teacher3'}, {'Name': 'teacher4'}, {'Name': 'teacher5'}], 
+
  'Classes': [{'Name': 'aiml', 'Subjects': 'sub1,sub2,sub3,sub4', 'Lab Subjects': 'lab_sub3,lab_sub2'}, {'Name': 'cse', 'Subjects': 'sub1,sub2,sub4,sub5', 'Lab Subjects': 'lab_sub2,lab_sub5'}, {'Name': 'ece', 'Subjects': 'sub1,sub5,sub6', 'Lab Subjects': 'lab_sub1'}], 
- 'Labs': [{'Name': 'lab1'}, {'Name': 'lab2'}, {'Name': 'lab3'}, {'Name': 'lab4'}], 
- 'Relations': [{'Subject': 'sub1', 'Class': 'aiml', 'Name': 'teacher1', 'Lectures': '3'},
-               {'Subject': 'sub1', 'Class': 'cse', 'Name': 'teacher1', 'Lectures': '3'},
-               {'Subject': 'sub5', 'Class': 'ece', 'Name': 'teacher1', 'Lectures': '3'},
-               {'Subject': 'sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '3'},
-               {'Subject': 'sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '2'},
-               {'Subject': 'sub1', 'Class': 'ece', 'Name': 'teacher2', 'Lectures': '3'},
-               {'Subject': 'lab_sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '1'},
-               {'Subject': 'lab_sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '1'},
-               {'Subject': 'sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '2'},
-               {'Subject': 'lab_sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '1'},
-               {'Subject': 'lab_sub1', 'Class': 'ece', 'Name': 'teacher3', 'Lectures': '1'},
-               {'Subject': 'sub4', 'Class': 'aiml', 'Name': 'teacher4', 'Lectures': '4'},
-               {'Subject': 'sub4', 'Class': 'cse', 'Name': 'teacher4', 'Lectures': '2'},
-               {'Subject': 'sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '4'},
-               {'Subject': 'sub6', 'Class': 'ece', 'Name': 'teacher5', 'Lectures': '3'},
-               {'Subject': 'lab_sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '1'},]}
+
+ 'Labs': [{'Name': 'lab1'}, {'Name': 'lab2'}, {'Name': 'lab3'}, {'Name': 'lab4'}],
+
+ 'Relations': [{'Subject': 'sub1', 'Class': 'aiml', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub1', 'Class': 'cse', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub5', 'Class': 'ece', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '3'}, {'Subject': 'sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '2'}, {'Subject': 'sub1', 'Class': 'ece', 'Name': 'teacher2', 'Lectures': '3'}, {'Subject': 'lab_sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '1'}, {'Subject': 'lab_sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '1'}, {'Subject': 'sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '2'}, {'Subject': 'lab_sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '1'}, {'Subject': 'lab_sub1', 'Class': 'ece', 'Name': 'teacher3', 'Lectures': '1'}, {'Subject': 'sub4', 'Class': 'aiml', 'Name': 'teacher4', 'Lectures': '4'}, {'Subject': 'sub4', 'Class': 'cse', 'Name': 'teacher4', 'Lectures': '2'}, {'Subject': 'sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '4'}, {'Subject': 'sub6', 'Class': 'ece', 'Name': 'teacher5', 'Lectures': '3'}, {'Subject': 'lab_sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '1'},]}
+        self.initUI()
 
     def initUI(self):
         self.setFixedSize(716, 553)
@@ -55,6 +45,7 @@ class TimeTableGenerator(QMainWindow):
         self.setCentralWidget(self.tabs)
         for title, columns in zip(tab_titles, tab_columns):
             self.createTab(title, columns)
+        self.fillData()
 
     def createTab(self, title, columns):
         tab = QWidget()
@@ -77,12 +68,28 @@ class TimeTableGenerator(QMainWindow):
             add_button.clicked.connect(lambda _, t=title: self.addButtonClicked(t))
             add_button_layout.addWidget(add_button)
             add_button_layout.addWidget(import_button)
+            if title== "Relations":
+                import_button.hide()
         layout.addLayout(add_button_layout)
         tab.setLayout(layout)
 
+    def fillData(self):
+        for title, data_list in self.data.items():
+            tab_index = tab_titles.index(title)
+            current_table = self.tabs.widget(tab_index).findChild(QTableWidget)
+            current_table.setRowCount(0)  # Clear existing data
+            for row, item in enumerate(data_list):
+                current_table.insertRow(row)
+                for col, (key, value) in enumerate(item.items()):
+                    item_widget = QTableWidgetItem(value)
+                    current_table.setItem(row, col, item_widget)
+                if current_table.cellWidget(row, len(tab_columns[tab_titles.index(title)]) - 1) is None:
+                    delete_button = QPushButton("Delete")
+                    delete_button.clicked.connect(lambda _, r=row: self.deleteEntry(current_table, r))
+                    current_table.setCellWidget(row, len(tab_columns[tab_titles.index(title)]) - 1, delete_button)
+
     def processData(self, title):
         current_tab_index = self.tabs.currentIndex()
-        current_tab_title = self.tabs.tabText(current_tab_index)
         current_table = self.tabs.widget(current_tab_index).findChild(QTableWidget)
         row_position = current_table.rowCount()
         data = {col: self.lineEdits[col].text() for col in tab_columns[tab_titles.index(title)] if col != "Operation"}
@@ -94,6 +101,10 @@ class TimeTableGenerator(QMainWindow):
                 break
         if existing_index is not None:
             existing_data[existing_index] = data
+            if current_table.cellWidget(existing_index, len(tab_columns[tab_titles.index(title)]) - 1) is None:
+                delete_button = QPushButton("Delete")
+                delete_button.clicked.connect(lambda: self.deleteEntry(current_table, existing_index))
+                current_table.setCellWidget(existing_index, len(tab_columns[tab_titles.index(title)]) - 1, delete_button)
         else:
             current_table.insertRow(row_position)
             existing_data.append(data)
@@ -157,12 +168,17 @@ class TimeTableGenerator(QMainWindow):
         current_table = self.tabs.widget(current_tab_index).findChild(QTableWidget)
         current_table.removeRow(row_position)
         removed_item = self.data[current_tab_title].pop(row_position)
+        # Update the data in other tables where 'teacher5' may be referenced
+        for title, data_list in self.data.items():
+            if title == current_tab_title:
+                continue
+            for item in data_list:
+                for key, value in item.items():
+                    if isinstance(value, str) and value == removed_item.get('Name'):
+                        item[key] = None  # Set to None instead of removing to avoid KeyError
+
     def generateButtonClicked(self):
-        # os.system('cls')
-        # labs = [x['Name'] for x in data['Labs']]
         initialize(self.data)
-        # print(labs)
-        # print(labs_tt)
         T_T_G(classes.keys())
         print(classes)
         for cls in classes.keys():
@@ -173,9 +189,6 @@ class TimeTableGenerator(QMainWindow):
             print(cls)
             for r in ttt[cls]:
                 print(r)
-        # for title, data_list in self.data.items():
-        #     print(f"{title} Data:", data_list)
-        # print(self.data)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
