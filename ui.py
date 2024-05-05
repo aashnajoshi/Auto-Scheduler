@@ -19,13 +19,11 @@ class TimeTableGenerator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.new_window_size = self.calculateNewWindowSize()
-        self.data={'Teachers': [{'Name': 'teacher1'}, {'Name': 'teacher2'}, {'Name': 'teacher3'}, {'Name': 'teacher4'}, {'Name': 'teacher5'}], 
-
- 'Classes': [{'Name': 'aiml', 'Subjects': 'sub1,sub2,sub3,sub4', 'Lab Subjects': 'lab_sub3,lab_sub2'}, {'Name': 'cse', 'Subjects': 'sub1,sub2,sub4,sub5', 'Lab Subjects': 'lab_sub2,lab_sub5'}, {'Name': 'ece', 'Subjects': 'sub1,sub5,sub6', 'Lab Subjects': 'lab_sub1'}], 
-
- 'Labs': [{'Name': 'lab1'}, {'Name': 'lab2'}, {'Name': 'lab3'}, {'Name': 'lab4'}],
-
- 'Relations': [{'Subject': 'sub1', 'Class': 'aiml', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub1', 'Class': 'cse', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub5', 'Class': 'ece', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '3'}, {'Subject': 'sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '2'}, {'Subject': 'sub1', 'Class': 'ece', 'Name': 'teacher2', 'Lectures': '3'}, {'Subject': 'lab_sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '1'}, {'Subject': 'lab_sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '1'}, {'Subject': 'sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '2'}, {'Subject': 'lab_sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '1'}, {'Subject': 'lab_sub1', 'Class': 'ece', 'Name': 'teacher3', 'Lectures': '1'}, {'Subject': 'sub4', 'Class': 'aiml', 'Name': 'teacher4', 'Lectures': '4'}, {'Subject': 'sub4', 'Class': 'cse', 'Name': 'teacher4', 'Lectures': '2'}, {'Subject': 'sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '4'}, {'Subject': 'sub6', 'Class': 'ece', 'Name': 'teacher5', 'Lectures': '3'}, {'Subject': 'lab_sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '1'},]}
+        self.data={
+        'Teachers': [{'Name': 'teacher1'}, {'Name': 'teacher2'}, {'Name': 'teacher3'}, {'Name': 'teacher4'}, {'Name': 'teacher5'}],
+        'Classes': [{'Name': 'aiml', 'Subjects': 'sub1,sub2,sub3,sub4', 'Lab Subjects': 'lab_sub3,lab_sub2'}, {'Name': 'cse', 'Subjects': 'sub1,sub2,sub4,sub5', 'Lab Subjects': 'lab_sub2,lab_sub5'}, {'Name': 'ece', 'Subjects': 'sub1,sub5,sub6', 'Lab Subjects': 'lab_sub1'}], 
+        'Labs': [{'Name': 'lab1'}, {'Name': 'lab2'}, {'Name': 'lab3'}, {'Name': 'lab4'}],
+        'Relations': [{'Subject': 'sub1', 'Class': 'aiml', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub1', 'Class': 'cse', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub5', 'Class': 'ece', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '3'}, {'Subject': 'sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '2'}, {'Subject': 'sub1', 'Class': 'ece', 'Name': 'teacher2', 'Lectures': '3'}, {'Subject': 'lab_sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '1'}, {'Subject': 'lab_sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '1'}, {'Subject': 'sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '2'}, {'Subject': 'lab_sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '1'}, {'Subject': 'lab_sub1', 'Class': 'ece', 'Name': 'teacher3', 'Lectures': '1'}, {'Subject': 'sub4', 'Class': 'aiml', 'Name': 'teacher4', 'Lectures': '4'}, {'Subject': 'sub4', 'Class': 'cse', 'Name': 'teacher4', 'Lectures': '2'}, {'Subject': 'sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '4'}, {'Subject': 'sub6', 'Class': 'ece', 'Name': 'teacher5', 'Lectures': '3'}, {'Subject': 'lab_sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '1'},]}
         self.initUI()
 
     def initUI(self):
@@ -51,26 +49,30 @@ class TimeTableGenerator(QMainWindow):
         tab = QWidget()
         self.tabs.addTab(tab, title)
         layout = QVBoxLayout()
-        table = QTableWidget()
-        table.setColumnCount(len(columns))
-        table.setHorizontalHeaderLabels(columns)
-        layout.addWidget(table)
 
-        add_button_layout = QHBoxLayout()
         if title == "Output Generator":
+            self.output_text_edit = QTextEdit()
+            self.output_text_edit.setReadOnly(True)
+            layout.addWidget(self.output_text_edit)
             generate_button = QPushButton("Generate", self)
             generate_button.clicked.connect(self.generateButtonClicked)
-            add_button_layout.addWidget(generate_button)
+            layout.addWidget(generate_button)
         else:
+            table = QTableWidget()
+            table.setColumnCount(len(columns))
+            table.setHorizontalHeaderLabels(columns)
+            layout.addWidget(table)
+
+            add_button_layout = QHBoxLayout()
             add_button = QPushButton(f"Add {title}", self)
             import_button = QPushButton("Import from CSV", self)
             import_button.clicked.connect(self.importButtonClicked)
             add_button.clicked.connect(lambda _, t=title: self.addButtonClicked(t))
             add_button_layout.addWidget(add_button)
             add_button_layout.addWidget(import_button)
-            if title== "Relations":
+            if title == "Relations":
                 import_button.hide()
-        layout.addLayout(add_button_layout)
+            layout.addLayout(add_button_layout)
         tab.setLayout(layout)
 
     def fillData(self):
@@ -168,27 +170,27 @@ class TimeTableGenerator(QMainWindow):
         current_table = self.tabs.widget(current_tab_index).findChild(QTableWidget)
         current_table.removeRow(row_position)
         removed_item = self.data[current_tab_title].pop(row_position)
-        # Update the data in other tables where 'teacher5' may be referenced
         for title, data_list in self.data.items():
             if title == current_tab_title:
                 continue
             for item in data_list:
                 for key, value in item.items():
                     if isinstance(value, str) and value == removed_item.get('Name'):
-                        item[key] = None  # Set to None instead of removing to avoid KeyError
+                        item[key] = None
 
     def generateButtonClicked(self):
         initialize(self.data)
         T_T_G(classes.keys())
-        print(classes)
+        output = ""
         for cls in classes.keys():
-            print(cls)
+            output += cls + "\n"
             for r in ctt[cls]:
-                print(r)
+                output += str(r) + "\n"
         for cls in teachers.keys():
-            print(cls)
+            output += cls + "\n"
             for r in ttt[cls]:
-                print(r)
+                output += str(r) + "\n"
+        self.output_text_edit.append(output)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
