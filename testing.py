@@ -37,7 +37,7 @@ class MyWindow(QMainWindow):
         table_widget2.setColumnCount(len(hour_labels))
         table_widget2.setVerticalHeaderLabels(days_of_week)
         table_widget2.setHorizontalHeaderLabels(hour_labels)
-        layout.addWidget(table_widgaet2)
+        layout.addWidget(table_widget2)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
