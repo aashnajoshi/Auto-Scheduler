@@ -29,15 +29,15 @@ teachers_tt={}
 labs_tt={}
 ctt={}
 ttt={}
-labs=[]
+labs=['lab1','lab2','lab3','lab4','lab5']
 def welcome():
     print("hello")
 def initialize(data):
+    # labs = [x['Name'] for x in data['Labs']]
     for i in data['Classes']:
         classes[i['Name']]=[i['Subjects'].split(','),i['Lab Subjects'].split(',')]
         class_tt[i['Name']]=[]
         ctt[i['Name']]=[x for x in basic_structure()]
-    labs = [x['Name'] for x in data['Labs']]
     for l in labs:
         labs_tt[l]= []
     for i in data['Teachers']:
@@ -95,7 +95,7 @@ def assign_labs(cls):
                     ttt[teacher][lec[0]-1][lec[i+1]-1]=(cls,selected_sub)
                     update_tt('teachers_tt',teacher,(lec[0],lec[i+1]))
                     print(lab)
-                    # update_tt('labs_tt',lab,(lec[0],lec[i+1]))
+                    update_tt('labs_tt',lab,(lec[0],lec[i+1]))
                     ctt[cls][lec[0]-1][lec[i+1]-1]=(selected_sub,teacher)
                     update_tt('classes_tt',cls,(lec[0],lec[i+1]))
                 lec_for_labs.remove(lec)
@@ -178,7 +178,7 @@ def assign_lectures(cls):
                     update_tt('classes_tt',cls,(day,lec)) #update clas tt
                     sub_data[subject][1]-=1 #dec num of lec for subject in subject data 
                     sub_left.remove(subject) #remove subject from list of subjects for today
-                    print((day,lec)," ",subject," ",sub_data[subject][0]," ")
+                    # print((day,lec)," ",subject," ",sub_data[subject][0]," ")
                     break
                 else:
                     subjects.remove(subject) #remove subject from copy

@@ -2,7 +2,8 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui
 import sys
 import os
-
+from generator import *
+os.system('cls')
 # To open Designer: qt5-tools designer
 # To convert .ui file to .py file: pyuic5 -x filename.ui -o filename.py
 
@@ -17,7 +18,25 @@ class TimeTableGenerator(QMainWindow):
         super().__init__()
         self.initUI()
         self.new_window_size = self.calculateNewWindowSize()
-        self.data = {title: [] for title in tab_titles[:-1]}
+        self.data={'Teachers': [{'Name': 'teacher1'}, {'Name': 'teacher2'}, {'Name': 'teacher3'}, {'Name': 'teacher4'}, {'Name': 'teacher5'}], 
+ 'Classes': [{'Name': 'aiml', 'Subjects': 'sub1,sub2,sub3,sub4', 'Lab Subjects': 'lab_sub3,lab_sub2'}, {'Name': 'cse', 'Subjects': 'sub1,sub2,sub4,sub5', 'Lab Subjects': 'lab_sub2,lab_sub5'}, {'Name': 'ece', 'Subjects': 'sub1,sub5,sub6', 'Lab Subjects': 'lab_sub1'}], 
+ 'Labs': [{'Name': 'lab1'}, {'Name': 'lab2'}, {'Name': 'lab3'}, {'Name': 'lab4'}], 
+ 'Relations': [{'Subject': 'sub1', 'Class': 'aiml', 'Name': 'teacher1', 'Lectures': '3'},
+               {'Subject': 'sub1', 'Class': 'cse', 'Name': 'teacher1', 'Lectures': '3'},
+               {'Subject': 'sub5', 'Class': 'ece', 'Name': 'teacher1', 'Lectures': '3'},
+               {'Subject': 'sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '3'},
+               {'Subject': 'sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '2'},
+               {'Subject': 'sub1', 'Class': 'ece', 'Name': 'teacher2', 'Lectures': '3'},
+               {'Subject': 'lab_sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '1'},
+               {'Subject': 'lab_sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '1'},
+               {'Subject': 'sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '2'},
+               {'Subject': 'lab_sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '1'},
+               {'Subject': 'lab_sub1', 'Class': 'ece', 'Name': 'teacher3', 'Lectures': '1'},
+               {'Subject': 'sub4', 'Class': 'aiml', 'Name': 'teacher4', 'Lectures': '4'},
+               {'Subject': 'sub4', 'Class': 'cse', 'Name': 'teacher4', 'Lectures': '2'},
+               {'Subject': 'sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '4'},
+               {'Subject': 'sub6', 'Class': 'ece', 'Name': 'teacher5', 'Lectures': '3'},
+               {'Subject': 'lab_sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '1'},]}
 
     def initUI(self):
         self.setFixedSize(716, 553)
@@ -139,10 +158,24 @@ class TimeTableGenerator(QMainWindow):
         current_table.removeRow(row_position)
         removed_item = self.data[current_tab_title].pop(row_position)
     def generateButtonClicked(self):
-        os.system('cls')
+        # os.system('cls')
+        # labs = [x['Name'] for x in data['Labs']]
+        initialize(self.data)
+        # print(labs)
+        # print(labs_tt)
+        T_T_G(classes.keys())
+        print(classes)
+        for cls in classes.keys():
+            print(cls)
+            for r in ctt[cls]:
+                print(r)
+        for cls in teachers.keys():
+            print(cls)
+            for r in ttt[cls]:
+                print(r)
         # for title, data_list in self.data.items():
         #     print(f"{title} Data:", data_list)
-        print(self.data)
+        # print(self.data)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

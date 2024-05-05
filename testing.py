@@ -42,10 +42,10 @@ for cls in classes.keys():
     print(cls)
     for r in ctt[cls]:
         print(r)
-# for cls in teachers.keys():
-#     print(cls)
-#     for r in ttt[cls]:
-#         print(r)
+for cls in teachers.keys():
+    print(cls)
+    for r in ttt[cls]:
+        print(r)
 # for i in data['Classes']:
 #     classes[i['Name']]=[i['Subjects'].split(','),i['Lab Subjects'].split(',')]
 #     class_tt[i['Name']]=[]
