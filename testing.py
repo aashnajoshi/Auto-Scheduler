@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QGridLayout, QPlainTextEdit, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import *
 from generator import *
 
 data = {
@@ -13,6 +13,7 @@ class MyWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Timetable Viewer")
         self.setGeometry(100, 100, 800, 600)
+        
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
@@ -26,14 +27,18 @@ class MyWindow(QMainWindow):
         self.class_dropdown.addItem("Select Class Timetable")
         for cls in classes.keys():
             self.class_dropdown.addItem(f"Class Timetable ({cls})")
+
         self.class_dropdown.currentIndexChanged.connect(self.show_class_timetable)
+        self.class_dropdown.hide()  # Initially hide
         grid_layout.addWidget(self.class_dropdown, 0, 0)
 
         self.teacher_dropdown = QComboBox()
         self.teacher_dropdown.addItem("Select Teacher's Timetable")
         for teacher in teachers.keys():
             self.teacher_dropdown.addItem(f"Teacher's Timetable ({teacher})")
+
         self.teacher_dropdown.currentIndexChanged.connect(self.show_teacher_timetable)
+        self.teacher_dropdown.hide()  # Initially hide
         grid_layout.addWidget(self.teacher_dropdown, 0, 1)
 
         self.timetable_label = QLabel("")
@@ -41,6 +46,10 @@ class MyWindow(QMainWindow):
         self.timetable_label.hide()
         self.table_widget = QTableWidget()
         layout.addWidget(self.table_widget)
+
+        self.generate_button = QPushButton("Generate") # Generate button
+        self.generate_button.clicked.connect(self.show_dropdowns)
+        layout.addWidget(self.generate_button)
 
     def show_class_timetable(self, index):
         if index != 0:
@@ -61,15 +70,21 @@ class MyWindow(QMainWindow):
     def populate_table(self, data):
         days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
+
         self.table_widget.clear()
         self.table_widget.setRowCount(5)
         self.table_widget.setColumnCount(7)
         self.table_widget.setVerticalHeaderLabels(days_of_week)
         self.table_widget.setHorizontalHeaderLabels(hour_labels)
+
         for r, row in enumerate(data):
             for c, cell in enumerate(row):
                 item = QTableWidgetItem(str(cell))
                 self.table_widget.setItem(r, c, item)
+
+    def show_dropdowns(self):
+        self.class_dropdown.show()
+        self.teacher_dropdown.show()
 
 if __name__ == "__main__":
     initialize(data)
