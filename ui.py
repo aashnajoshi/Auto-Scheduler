@@ -235,9 +235,6 @@ class TimeTableGenerator(QMainWindow):
             self.populate_table(ttt[teacher])
 
     def populate_table(self, data):
-        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-        hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
-
         self.table_widget.clear()
         self.table_widget.setRowCount(len(data))
         self.table_widget.setColumnCount(len(data[0]))
