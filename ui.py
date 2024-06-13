@@ -24,6 +24,8 @@ class TimeTableGenerator(QMainWindow):
         'Classes': [{'Name': 'aiml', 'Subjects': 'sub1,sub2,sub3,sub4', 'Lab Subjects': 'lab_sub3,lab_sub2'}, {'Name': 'cse', 'Subjects': 'sub1,sub2,sub4,sub5', 'Lab Subjects': 'lab_sub2,lab_sub5'}, {'Name': 'ece', 'Subjects': 'sub1,sub5,sub6', 'Lab Subjects': 'lab_sub1'}], 
         'Labs': [{'Name': 'lab1'}, {'Name': 'lab2'}, {'Name': 'lab3'}, {'Name': 'lab4'}],
         'Relations': [{'Subject': 'sub1', 'Class': 'aiml', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub1', 'Class': 'cse', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub5', 'Class': 'ece', 'Name': 'teacher1', 'Lectures': '3'}, {'Subject': 'sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '3'}, {'Subject': 'sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '2'}, {'Subject': 'sub1', 'Class': 'ece', 'Name': 'teacher2', 'Lectures': '3'}, {'Subject': 'lab_sub2', 'Class': 'aiml', 'Name': 'teacher2', 'Lectures': '1'}, {'Subject': 'lab_sub2', 'Class': 'cse', 'Name': 'teacher2', 'Lectures': '1'}, {'Subject': 'sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '2'}, {'Subject': 'lab_sub3', 'Class': 'aiml', 'Name': 'teacher3', 'Lectures': '1'}, {'Subject': 'lab_sub1', 'Class': 'ece', 'Name': 'teacher3', 'Lectures': '1'}, {'Subject': 'sub4', 'Class': 'aiml', 'Name': 'teacher4', 'Lectures': '4'}, {'Subject': 'sub4', 'Class': 'cse', 'Name': 'teacher4', 'Lectures': '2'}, {'Subject': 'sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '4'}, {'Subject': 'sub6', 'Class': 'ece', 'Name': 'teacher5', 'Lectures': '3'}, {'Subject': 'lab_sub5', 'Class': 'cse', 'Name': 'teacher5', 'Lectures': '1'},]}
+        self.classes_data = {item['Name']: item for item in self.data['Classes']}
+        self.teachers_data = {item['Name']: item for item in self.data['Teachers']}
         self.initUI()
 
     def initUI(self):
@@ -51,12 +53,29 @@ class TimeTableGenerator(QMainWindow):
         layout = QVBoxLayout()
 
         if title == "Output Generator":
-            self.output_text_edit = QTextEdit()
-            self.output_text_edit.setReadOnly(True)
-            layout.addWidget(self.output_text_edit)
-            generate_button = QPushButton("Generate", self)
+            dropdown_layout = QHBoxLayout()
+            self.class_dropdown = QComboBox()
+            self.class_dropdown.addItem("Select Class Timetable")
+            for cls in self.classes_data.keys():
+                self.class_dropdown.addItem(f"Class Timetable ({cls})")
+            self.class_dropdown.currentIndexChanged.connect(self.show_class_timetable)
+            dropdown_layout.addWidget(self.class_dropdown)
+
+            self.teacher_dropdown = QComboBox()
+            self.teacher_dropdown.addItem("Select Teacher's Timetable")
+            for teacher in self.teachers_data.keys():
+                self.teacher_dropdown.addItem(f"Teacher's Timetable ({teacher})")
+            self.teacher_dropdown.currentIndexChanged.connect(self.show_teacher_timetable)
+            dropdown_layout.addWidget(self.teacher_dropdown)
+            layout.addLayout(dropdown_layout)
+
+            self.table_widget = QTableWidget()
+            layout.addWidget(self.table_widget)
+
+            generate_button = QPushButton("Generate")
             generate_button.clicked.connect(self.generateButtonClicked)
             layout.addWidget(generate_button)
+
         else:
             table = QTableWidget()
             table.setColumnCount(len(columns))
@@ -179,18 +198,56 @@ class TimeTableGenerator(QMainWindow):
                         item[key] = None
 
     def generateButtonClicked(self):
-        initialize(self.data)
-        T_T_G(classes.keys())
-        output = ""
-        for cls in classes.keys():
-            output += cls + "\n"
+        index = self.class_dropdown.currentIndex()
+        if index != 0:
+            cls = list(self.classes_data.keys())[index - 1]
+            initialize(self.data)
+            T_T_G([cls])
+            output = f"{cls}\n"
             for r in ctt[cls]:
                 output += str(r) + "\n"
-        for cls in teachers.keys():
-            output += cls + "\n"
-            for r in ttt[cls]:
+            self.table_widget.clear()
+            self.table_widget.setRowCount(len(ctt[cls]))
+            self.table_widget.setColumnCount(len(ctt[cls][0]))
+            self.populate_table(ctt[cls])
+
+        index = self.teacher_dropdown.currentIndex()
+        if index != 0:
+            teacher = list(self.teachers_data.keys())[index - 1]
+            initialize(self.data)
+            T_T_G([teacher])
+            output = f"{teacher}\n"
+            for r in ttt[teacher]:
                 output += str(r) + "\n"
-        self.output_text_edit.append(output)
+            self.table_widget.clear()
+            self.table_widget.setRowCount(len(ttt[teacher]))
+            self.table_widget.setColumnCount(len(ttt[teacher][0]))
+            self.populate_table(ttt[teacher])
+
+    def show_class_timetable(self, index):
+        if index != 0:
+            cls = list(self.classes_data.keys())[index - 1]
+            self.populate_table(ctt[cls])
+
+    def show_teacher_timetable(self, index):
+        if index != 0:
+            teacher = list(self.teachers_data.keys())[index - 1]
+            self.populate_table(ttt[teacher])
+
+    def populate_table(self, data):
+        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        hour_labels = ["9:00", "9:50", "10:40", "11:30", "12:30", "1:30", "2:20", "3:10", "4:00"]
+
+        self.table_widget.clear()
+        self.table_widget.setRowCount(len(data))
+        self.table_widget.setColumnCount(len(data[0]))
+        self.table_widget.setVerticalHeaderLabels(days_of_week)
+        self.table_widget.setHorizontalHeaderLabels(hour_labels)
+
+        for r, row in enumerate(data):
+            for c, cell in enumerate(row):
+                item = QTableWidgetItem(str(cell))
+                self.table_widget.setItem(r, c, item)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
