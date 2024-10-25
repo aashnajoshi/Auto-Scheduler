@@ -1,9 +1,9 @@
 # Auto-Scheduler
-A Python-based automation tool that converts scheduled tasks into a predefined format and generates reminders or task lists.
+A Python-based automation tool that generates timetables based on teacher and lab availability to design a proper timetable for each class smartly.
 
 ## Features
-- Converts schedules from various formats into a unified structure.
-- Generates reminders or customized task lists for easier management.
+- Creates dynamic schedules from various use cases into a unified structure.
+- Created a UI-interface for teachers and HODs to smartly manage schedules for both, students and teachers.
 
 ## Usage
 ### Install the required libraries:
