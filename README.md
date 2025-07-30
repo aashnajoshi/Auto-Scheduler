@@ -1,9 +1,9 @@
-# Auto-Scheduler
-A Python-based automation tool that generates timetables based on teacher and lab availability to design a proper timetable for each class smartly.
+# Schedula
+Schedula is a Python-based automation tool that generates timetables based on teacher and lab availability to design a proper timetable for each class smartly.
 
 ## Features
 - Creates dynamic schedules from various use cases into a unified structure.
-- Created a UI-interface for teachers and HODs to smartly manage schedules for both, students and teachers.
+- Created a UI interface for teachers and HODs to manage schedules for both, students and teachers smartly.
 
 ## Usage
 ### Install the required libraries:
